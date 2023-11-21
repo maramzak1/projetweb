@@ -1,0 +1,43 @@
+<!--
+<center>
+    <h1>List of Regions</h1>
+    <h2>
+        <a href="addRegion.php">Add region</a>
+    </h2>
+</center>
+<table border="1" align="center" width="70%">
+    <tr>
+        <th>Id Region</th>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Image</th>
+        
+    </tr>
+
+
+    <?php
+    //foreach ($tab as $region) { //region c une variable c pas la liste dans la base de donnee
+    ?>
+
+
+
+
+        <tr>
+            <td><?=  $region['id_region']; ?></td>
+            <td><?=  $region['nom']; ?></td>
+            <td><?=  $region['description']; ?></td>
+            <td><?=  $region['image']; ?></td>
+            <td align="center">
+                <form method="POST" action="updateRegion.php">
+                    <input type="submit" name="update" value="Update">
+                    <input type="hidden" value=<?PHP echo $region['id_region']; ?> name="id_region">
+                </form>
+            </td>
+            <td>
+                <a href=" deleteRegion.php?id=<?php echo $region['id_region']; ?>">Delete</a>
+            </td>
+        </tr>
+    <?php
+    
+    ?>
+</table>-->
