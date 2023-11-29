@@ -135,56 +135,72 @@
         
        
         <div class="layout-page">
+<?php
+include_once "../controller/postC.php";
 
-       
-<?php 
-include "../controller/commentaireC.php";  
-$c = new commentaireC();
-$tab = $c->listecommentaire();
- 
+$postC = new postC();
+$listepost = $postC->getPostList();
+$uploads_dir = "uploads";
 
+if (!file_exists($uploads_dir)) {
+    mkdir($uploads_dir, 0777, true);
+}
 
+$totalPosts = $postC->getTotalPosts();
 ?>
-  
-<center>                                       
-    <h1>List of comments</h1>
-    <h2> 
-        <a href="addcommentaire.php">Add Comment</a>
-    </h2>
-</center>
-<table border="1" align="center" width="70%">
-    <tr>
-        <th>Comment ID</th>
-        <th>Comment Text</th>
-        <th>Author</th>
-        <th>Created At</th>
-        <th>Update</th>
-        <th>Delete</th> 
-    </tr>
 
-    <?php
-    foreach ($tab as $commentaire) {
-    ?>
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des posts</title>
+</head>
+<body>
+    <center>
+        <h1>Liste des posts</h1>
+        <h2><a href="addpost.php">Ajouter un post</a></h2>
+    </center>
+    <table border="1" align="center" width="70%">
         <tr>
-            <td><?= $commentaire['comment_id']; ?></td>
-            <td><?= $commentaire['comment_text']; ?></td>
-            <td><?= $commentaire['author']; ?></td>
-            <td><?= $commentaire['created_at']; ?></td>
-            
-            <td align="center">
-                <form method="POST" action="updatecommentaire.php">
-                    <input type="submit" name="update" value="Update">
-                    <input type="hidden" value=<?PHP echo $commentaire['comment_id']; ?> name="comment_id">
-                </form>
-            </td>
-            <td>
-               
-                <a href="deletecommentaire.php?comment_id=<?php echo $commentaire['comment_id']; ?>">Delete</a>
-            </td>
+            <th>TITRE</th>
+            <th>content</th>
+            <th>image</th>
+            <th>date</th>
+            <th>Nbr Total Posts</th>
+            <th>Update</th>
+            <th>Delete</th>
         </tr>
-    <?php
-    }
-    ?>
-</table>
- 
+        <?php foreach ($listepost as $post) : ?>
+            <tr>
+                <td><?= $post['title']; ?></td>
+                <td><?= $post['content']; ?></td>
+                <td style="text-align: center;">
+                    <?php if (!empty($post['image']) && file_exists($uploads_dir . '/' . basename($post['image']))) : ?>
+                        <img src="<?= $uploads_dir . '/' . basename($post['image']); ?>" alt="Description de l'image" style="width: 100%; max-width: 2000px; height: auto; border: 1px solid #ccc;">
+                    <?php else : ?>
+                        No Image
+                    <?php endif; ?>
+                </td>
+                <td><?= $post['date']; ?></td>
+                <td><?= $totalPosts; ?></td>
+                <td align="center">
+                    <form method="POST" action="updatepost.php">
+                        <?php if (isset($post['id'])) : ?>
+                            <input type="hidden" name="id" value="<?= $post['id']; ?>">
+                        <?php endif; ?>
+                        <input type="submit" name="update" value="Update">
+                    </form>
+                </td> 
+                <td align="center">
+                    <form method="GET" action="deletepost.php">
+                        <input type="hidden" name="id" value="<?= $post['id']; ?>">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</body>
+</html>
+

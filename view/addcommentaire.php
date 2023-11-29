@@ -23,7 +23,7 @@ if (
         !empty($_POST["author"]) &&
         !empty($_POST["created_at"])
     ) {
-        // Créer une instance de Commentaire au lieu de Joueur (corrigé)
+        // Créer une instance de Commentaire  
         $commentaire = new Commentaire(
             null,
             $_POST['comment_text'],
@@ -31,11 +31,11 @@ if (
             $_POST['created_at']
         );
 
-        // Utiliser $commentaire au lieu de $commentaireC pour ajouter le commentaire (corrigé)
+        // Utiliser $commentaire au lieu de $commentaireC pour ajouter le commentaire  
         $commentaireC->addcommentaire($commentaire); 
         // Rediriger vers la liste des commentaires
        //header('Location: listecommentaire.php'); 
-       // exit(); // Ajout de exit() pour arrêter l'exécution après la redirection
+       // exit(); // Ajout de exit  pour arrêter l'exécution après la redirection
     } else {
         $error = "Missing information";
     }
@@ -120,7 +120,38 @@ if (
 
         
     </body>
+ <style>
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+.comment-form {
+    width: 60%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    font-weight: bold;
+}
+
+textarea,
+input[type="text"],
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+ 
+</style>
 </html>
-
-
  

@@ -1,14 +1,66 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Melodi</title>
-		<!-- Description, Keywords and Author -->
-		<meta name="description" content="Your description">
-		<meta name="keywords" content="Your,Keywords">
-		<meta name="author" content="HimanshuGupta">
-		
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php
+include_once "../model/post.php";
+include_once "../controller/postC.php";
+
+$postC = new postC();
+$error = "";
+ 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $uploadDir = "uploads/";
+
+    $title = $_POST['title'];
+    $content = $_POST['content'];
+
+    // Check if all required fields are filled
+    if (!empty($title) && !empty($content) && isset($_FILES['image'])) {
+        $image = $_FILES['image'];
+
+        // Check if the file is an image
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (in_array($image['type'], $allowedTypes)) {
+            // Generate a unique filename for the uploaded file
+            $filename = uniqid() . "_" . $image['name'];
+            $uploadPath = $uploadDir . $filename;
+
+            // Move the uploaded file to the specified directory
+            if (move_uploaded_file($image['tmp_name'], $uploadPath)) {
+                // Create a new Post object with the uploaded image path
+                $post = new Post(
+                    $content,
+                    date('Y-m-d H:i:s'),
+                    $title,
+                    $uploadPath,
+                    1
+                );
+
+                $postC->addPost($post);
+                // Redirect to listepost.php after adding the post
+                //header('Location: listepost.php');
+                //exit();
+            } else {
+                $error = "Failed to upload image.";
+            }
+        } else {
+            $error = "Invalid image format. Please upload a JPEG, PNG, or GIF file.";
+        }
+    } else {
+        $error = "Missing information. Please fill in all required fields.";
+    }
+}
+$listepost = $postC->getPostList();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
+
+<html lang="en">
+    
+  
+
+
+<!--code templateeee -->
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<!-- Styles -->
 		<!-- Bootstrap CSS -->
@@ -210,59 +262,137 @@
 				<!-- default heading -->
 				<div class="default-heading">
 					<!-- heading --> 
-				 
-									 
-									 
-		<!-- about end -->
-		<div class="contact pad" id="contact">
-			<div class="container">
-				<!-- default heading -->
-				<div class="default-heading">
-					<!-- heading -->
-					<h2>Comment</h2>
+					<h2>Posts</h2>
 				</div>
-				<div class="row">	
-					<div class="col-md-4 col-sm-4">
-						<!-- contact item -->
-						<div class="contact-item ">
-							<!-- big icon -->
-							<i class="fa fa-street-view"></i>
-							<!-- contact details  -->
-							<span class="contact-details">Ariana Ghazela</span>
+				<!-- about what we are like content -->
+				<div class="about-what-we">
+					<div class="row">
+						<div class="col-md-4 col-sm-4">
+							<div class="what-we-item ">
+								<!-- heading with icon -->
+								<h3><i class="fa fa-heartbeat"></i> What we do?</h3>
+								<!-- paragraph -->
+		<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
+							</div>
+						</div>
+						<div class="col-md-4 col-sm-4">
+							<div class="what-we-item ">
+								<!-- heading with icon -->
+								<h3><i class="fa fa-hand-o-up"></i> Why choose us?</h3>
+								<!-- paragraph -->
+								<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
+							</div>
+						</div>
+						<div class="col-md-4 col-sm-4">
+							<div class="what-we-item ">
+								<!-- heading with icon -->
+								<h3><i class="fa fa-map-marker"></i> Where we are?</h3>
+								<!-- paragraph -->
+<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
+							</div>
 						</div>
 					</div>
-					<div class="col-md-4 col-sm-4">
-						<!-- contact item -->
-						<div class="contact-item ">
-							<!-- big icon -->
-							<i class="fa fa-wifi"></i>
-							<!-- contact details  -->
-							<span class="contact-details">tunizika@gmail.com</span>
-						</div>
-					</div>
-					<div class="col-md-4 col-sm-4">
-						<!-- contact item -->
-						<div class="contact-item ">
-							<!-- big icon -->
-							<i class="fa fa-phone"></i>
-							<!-- contact details  -->
-							<span class="contact-details">70 701 703</span>
-						</div> 
-					</div>
 				</div>
-					<!-- Form Content -->
-					<div class="comment-form">
-						
-					<!-- Paragraph -->
-					 <center>
-						<h1>Do you have any comment in your mind? Drop us a line.</h1>
-</center>
-				 
-
 			</div>
-		</div>
-		 
-		 
-		
-	 
+
+
+<!-- hedhiii khedemtiii -->
+
+
+
+<head>
+    <!-- Add any necessary meta tags and stylesheets -->
+</head>
+<body>
+   <!-- <center>
+        <button><a href="listepost.php">Back to list</a></button>
+    </center>-->
+    <hr>
+    <center>
+        <form action="" method="POST" id="myForm" enctype="multipart/form-data">
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <?php foreach ($listepost as $post) { ?>
+                    <div style="border: 1px solid #ccc; padding: 10px; width: 200px; margin-right: 20px;">
+                        <img src="<?= $post['image']; ?>" alt="Description de l'image" style="width: 100%; height: auto; border: 1px solid #ccc;">
+                        <p style="margin: 10px 0; font-weight: bold;"><?= $post['title']; ?></p>
+                        <p><?= $post['date']; ?></p>
+                    </div>
+                <?php } ?>
+            </div>
+                </center>
+<center>
+            <table>
+                <tr>
+                    <td><label for="title">Title:</label></td>
+                    <td>
+                        <input type="text" id="title" name="title" />
+                        <span id="errortitle" style="color: red"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="content">Content:</label></td>
+                    <td>
+                        <input type="text" id="content" name="content" />
+                        <span id="errorcontent" style="color: red"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="image">Image:</label></td>
+                    <td>
+                        <input type="file" id="image" name="image" accept="image/*" />
+                        <span id="errorimage" style="color: red"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <br>
+                    <td colspan="2">
+                        <input type="submit" class="btn btn-lg btn-theme" value="Save">
+                        <input type="reset" class="btn btn-lg btn-theme" value="Reset">
+                    </td>
+                </tr>
+            </table>
+
+        <?php
+        // Display error message if there is any
+        if (!empty($error)) {
+            echo '<div style="color:red;text-align:center;">' . $error . '</div>';
+        }
+        ?>
+    </form>
+    </center>
+</body>
+
+<style>
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+.comment-form {
+    width: 60%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    font-weight: bold;
+}
+
+textarea,
+input[type="text"],
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+ 
+</style>
 </html>

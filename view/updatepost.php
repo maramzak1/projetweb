@@ -1,49 +1,42 @@
 <?php
-include_once '../controller/commentaireC.php';
-include_once '../model/commentaire.php';
+include_once '../controller/postC.php';
+include_once '../model/post.php';
 
 $error = "";
-$commentaire = null;
-$commentaireC = new commentaireC();
- 
+$post = null;
+$postC = new postC();
 
 if (
-    
-    isset($_POST["comment_text"]) &&
-    isset($_POST["author"]) &&
-    isset($_POST["created_at"])
+    isset($_POST["content"]) &&
+    isset($_POST["title"]) &&
+    isset($_POST["date"])
 ) {
     // Vérifier si les champs ne sont pas vides
     if (
-        
-        !empty($_POST["comment_text"]) &&
-        !empty($_POST["author"]) &&
-        !empty($_POST["created_at"])
+        !empty($_POST["content"]) &&
+        !empty($_POST["title"]) &&
+        !empty($_POST["date"])
     ) {
         // Créer une instance de Commentaire
-        $commentaire = new Commentaire(
+        $post = new post(
             null,
-           
-            $_POST['comment_text'],
-            $_POST['author'],
-            $_POST['created_at']
+            $_POST['content'],
+            $_POST['title'],
+            $_POST['date']
         );
 
-        // Afficher les données du commentaire pour le débogage
-        echo "Commentaire avant mise à jour: ";
-        var_dump($commentaire);
-
-
-   
-            // Tenter de mettre à jour le commentaire
-            $commentaireC->updatecommentaire($commentaire, $_POST['comment_id']);
-            echo "Commentaire mis à jour avec succès!";
-            header('Location: listecommentaire.php');
-            
-    }  
+        // Tenter de mettre à jour le commentaire
+        $postC->updatepost($post, $_POST['id']);
+        
+        // Redirection après la mise à jour
+        header('Location: listepost.php');
+        exit(); // Assurez-vous de quitter le script après la redirection
+    } else {
+        $error = "Missing information";
+    }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,12 +45,12 @@ if (
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/boostrap.css">
-    <title>Commentaire</title>
+    <title>posts</title>
      
 </head>
 
 <body>
-    <button><a href="listecommentaire.php">Retour à la liste</a></button>
+    <button><a href="listepost.php">Retour à la liste</a></button>
     <hr>
 
     <div id="error">
@@ -65,34 +58,34 @@ if (
     </div>
 
     <?php
-    if (isset($_POST['comment_id'])) {
-        $commentaire = $commentaireC->showcommentaire($_POST['comment_id']);
+    if (isset($_POST['id'])) {
+        $post= $postC->showpost($_POST['id']);
     ?>
 
-        <form action="updatecommentaire.php" method="POST">
+        <form action="updatepost.php" method="POST">
             <table>
                 <tr>
-                    <td><label for="comment_id">ID du commentaire :</label></td>
+                    <td><label for="id">ID du post :</label></td>
                     <td>
-                        <input type="text" id="comment_id" name="comment_id" value="<?php echo $_POST['comment_id'] ?>" readonly />
+                        <input type="text" id="id" name="id" value="<?php echo $_POST['id'] ?>" readonly />
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="comment_text">Texte du commentaire :</label></td>
+                    <td><label for="content">Texte du post :</label></td>
                     <td>
-                        <textarea id="comment_text" name="comment_text" rows="4" cols="50"><?php echo $commentaire['comment_text'] ?></textarea>
+                        <textarea id="content" name="content" rows="4" cols="50"><?php echo $post['content'] ?></textarea>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="author">Auteur :</label></td>
+                    <td><label for="title">titre :</label></td>
                     <td>
-                        <input type="text" id="author" name="author" value="<?php echo $commentaire['author'] ?>" />
+                        <input type="text" id="title" name="title" value="<?php echo $post['title'] ?>" />
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="created_at">Créé le :</label></td>
+                    <td><label for="date">Créé le :</label></td>
                     <td>
-                        <input type="datetime-local" id="created_at" name="created_at" value="<?php echo $commentaire['created_at'] ?>" />
+                        <input type="datetime-local" id="date" name="date" value="<?php echo $post['date'] ?>" />
                     </td>
                 </tr>
                 <tr>
@@ -111,11 +104,11 @@ if (
     ?>
      <script>
             function validateForm() {
-                var comment_text = document.getElementById("comment_text").value;
-                var author = document.getElementById("author").value;
-                var created_at = document.getElementById("created_at").value;
+                var content = document.getElementById("content").value;
+                var title = document.getElementById("title").value;
+                var date = document.getElementById("date").value;
 
-                if (comment_text == "" || author == "" || created_at == "") {
+                if (content == "" || title == "" || date == "") {
                     alert("Tous les champs doivent être remplis.");
                     return false;
                 }

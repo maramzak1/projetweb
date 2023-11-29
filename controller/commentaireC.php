@@ -22,7 +22,7 @@ class commentaireC
     $sql = "DELETE FROM commentaire WHERE comment_id = :comment_id"; // Modifier 'id' en 'comment_id'
     $db = config::getConnexion();
     $req = $db->prepare($sql);
-    $req->bindValue(':comment_id', $ide); // Modifier ':id' en ':comment_id'
+    $req->bindValue(':comment_id', $ide);  
 
     try {
         $req->execute();
@@ -77,22 +77,23 @@ class commentaireC
                    author = :author,
                    created_at = :created_at
                   
-                WHERE comment_id = :comment_id' // Correction ici, pas de virgule avant WHERE
+                WHERE comment_id = :comment_id'  
             );
             
             $query->execute([
                 'comment_id' => $id,
                 'comment_text' => $commentaire->getcomment_text(),
-                'author' => $commentaire->getauthor(),  // Correction ici, pas d'espace avant 'author'
+                'author' => $commentaire->getauthor(),   
                 'created_at' => $commentaire->getcreated_at(),
                
             ]);
             
             echo $query->rowCount() . " records UPDATED successfully <br>";
         } catch (PDOException $e) {
-            echo 'Error: ' . $e->getMessage();  // Correction ici, afficher l'erreur
+            echo 'Error: ' . $e->getMessage();   
         }
     }
+     
     
     
-}
+} 
