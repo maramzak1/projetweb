@@ -16,21 +16,22 @@ $error = "";
 $region = null;
 $RegionC = new RegionC();
 
-// Check if the form is submitted
+// voir si form submitted
 if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"])) {
-    // Check if form fields are not empty
+    // voir si forms ferghin
     if (!empty($_POST['nom']) && !empty($_POST["description"]) && !empty($_POST["image"])) {
-        // Create a Region object
+        // aamlt objet
         $region = new Region(
             null,
             $_POST['nom'],
             $_POST['description'],
             $_POST['image']
+            
         );
         
-        // Add the region to the database
+        // zdt l objet lel db
         $RegionC->addRegion($region);
-        // Redirect to the region list page
+        // njraa lel liste
         header('Location: listRegion.php');
 
         
@@ -40,6 +41,7 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
     }
 }
 ?>
+
 
 
 
@@ -164,6 +166,8 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
           </div>
 
           <div class="menu-inner-shadow"></div>
+           <!-- Forms & Tables -->
+           <li class="menu-header small text-uppercase"><span class="menu-header-text">Gestion Région</span></li>
 
           <ul class="menu-inner py-1">
             
@@ -173,8 +177,16 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
                 <div data-i18n="Tables">Gestion des Régions</div>
               </a>
             </li>
+            <li class="menu-item">
+            <a href="listFolklore.php" class="menu-link">
+             <i class="menu-icon tf-icons bx bx-grid"></i>
+            <div data-i18n="Datatables">Gestion Folklore</div>
             
+            </a>
+                </li>
+
           </ul>
+          
         </aside>
         
         
@@ -189,8 +201,8 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
         
         
 
-      <!-- ajout de la région-->
-      <div class="row">
+  <!-- ajout de la région-->
+  <div class="row">
         <div class="col-xxl">
             <div class="card mb-4">
                 <div class="card-header d-flex align-items-center justify-content-between">
@@ -198,9 +210,9 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
                     <small class="text-muted float-end">Default label</small>
                 </div>
                 <div class="card-body">
-                    <!-- Form to add a region -->
+                    
                     <form class="form-horizontal" action="" method="POST">
-                        <!-- Region Name -->
+                        
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="nom">Nom</label>
                             <div class="col-sm-10">
@@ -209,23 +221,29 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
                         </div>
 
                        
-                        <!-- Region Name -->
+                        
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" for="description">Description</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="basic-default-descirption" name="description" placeholder=" Tapez une description de la région " />
+                           <label class="col-sm-2 col-form-label" for="description">Description</label>
+                              <div class="col-sm-10">
+                                <textarea class="form-control" id="basic-default-description" name="description" placeholder="Tapez une description de la région" style="resize: vertical; height: 100px;"></textarea>
+                              </div>
                             </div>
-                        </div>
 
-                        <!-- Region Image -->
+
+
+                        
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" for="image">Image</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="image" id="basic-default-pic" placeholder="Insérez une image de cette région" />
+                                <input type="file" class="form-control" name="image" id="basic-default-pic" placeholder="Insérez une image de cette région" />
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
+                        
+
+
+
+                        
                         <div class="row justify-content-end">
                             <div class="col-sm-10">
                                 <button type="submit" class="btn btn-primary">Send</button>
@@ -239,49 +257,63 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Fonction de validation du formulaire
+        
         function validateForm() {
             var nomInput = document.getElementById('basic-default-name');
-            var descriptionInput = document.getElementById('basic-default-descirption');
-            var imageInput = document.getElementById('basic-default-pic');
-
-            // Fonction pour vérifier si la première lettre est en majuscule
+            var descriptionInput = document.getElementById('basic-default-description');
+            
+            
             function isFirstLetterUpperCase(str) {
                 return /^[A-Z]/.test(str);
             }
 
             // Validation du nom
             var nom = nomInput.value;
-            if (nom.length < 4 || nom.length > 30 || /\d/.test(nom) || !isFirstLetterUpperCase(nom)) {
-                alert('Le nom doit commencer par une lettre en majuscule, ne doit pas contenir de chiffres, et doit avoir une longueur entre 4 et 30 caractères.');
+            if (nom.length < 5 || nom.length > 30 || /\d/.test(nom) || !isFirstLetterUpperCase(nom)) {
+                displayError(nomInput, 'Le nom doit commencer par une lettre en majuscule, ne doit pas contenir de chiffres, et doit avoir une longueur entre 5 et 30 caractères.');
                 return false;
             }
 
-            // Validation de la description
+            // Validation de  description
             var description = descriptionInput.value;
             if (description.length < 10 || description.length > 130 || !isFirstLetterUpperCase(description) || !description.endsWith('.')) {
-                alert('La description doit commencer par une majuscule, se terminer par un point, et avoir une longueur entre 10 et 130 caractères.');
+                displayError(descriptionInput, 'La description doit commencer par une majuscule, se terminer par un point, et avoir une longueur entre 10 et 130 caractères.');
                 return false;
             }
 
-            // Validation de l'image (vérification de la présence d'un point)
-            var image = imageInput.value;
-            if (!image.includes('.')) {
-                alert('L\'image doit contenir un point.');
-                return false;
-            }
+            // Clear previous error messages
+            clearErrors();
 
             return true; // Le formulaire est valide
         }
 
-        // Ajouter un gestionnaire d'événement pour le formulaire
+        function displayError(input, message) {
+            // Create a new error message element
+            var errorElement = document.createElement('div');
+            errorElement.className = 'text-danger';
+            errorElement.innerHTML = message;
+
+            // Insert the error message after the input element
+            input.parentNode.insertBefore(errorElement, input.nextSibling);
+        }
+
+        function clearErrors() {
+            // Remove all previous error messages
+            var errorMessages = document.querySelectorAll('.text-danger');
+            errorMessages.forEach(function (errorMessage) {
+                errorMessage.remove();
+            });
+        }
+
         document.querySelector('form').addEventListener('submit', function (e) {
+            clearErrors(); // Clear previous error messages before revalidation
             if (!validateForm()) {
                 e.preventDefault(); // Empêcher l'envoi du formulaire si la validation échoue
             }
         });
     });
 </script>
+
     
    
 
@@ -321,6 +353,7 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
                           <th>Nom</th>
                           <th>Description</th>
                           <th>Image</th>
+                          
                           <th>Action</th>
 
                           
@@ -346,6 +379,8 @@ if (isset($_POST["nom"]) && isset($_POST["description"]) && isset($_POST["image"
                             <i class="bx bxl-angular bx-sm text-danger me-3"></i>
                             <span class="fw-medium"><?= $region['image']; ?></span>
                           </td>
+
+                          
                           
                           <td>
                             <a href="deleteRegion.php?id=<?= $region['id_region']; ?>">Delete</a>

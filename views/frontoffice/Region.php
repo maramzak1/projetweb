@@ -6,6 +6,8 @@ include "../../controller/RegionC.php";
 
 $RgC = new RegionC;
 $Rg = $RgC->listRegion();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -144,7 +146,7 @@ $Rg = $RgC->listRegion();
 				</nav>
 			</header>
 			
-			<!-- featured abbum -->
+            <!-- featured abbum -->
 			<div class="featured pad" id="featuredalbum">
 				<div class="container">
 					<!-- default heading -->
@@ -161,6 +163,8 @@ $Rg = $RgC->listRegion();
 								<div class="featured-item ">
 									<!-- image container -->
 									<div class="figure">
+									<<a href="folklorePage.php?id_region=<?php echo $region['id_region']; ?>">
+
 										<!-- image -->
 										<img class="img-responsive" src="../../Assets/frontoffice/img/media/<?php echo $region['image']; ?>" alt="" />
 										<!-- paragraph -->
@@ -183,6 +187,8 @@ $Rg = $RgC->listRegion();
 				</div>
 			</div>
 			<!-- features end -->
+			
+					
 			
 			
 			

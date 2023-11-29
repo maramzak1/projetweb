@@ -177,6 +177,8 @@ hr{
   animation-delay:1s;
 }
 
+
+
 .banner .carousel .carousel-caption h2 i {
 	font-size: 64px;
   display: inline-block;
@@ -195,6 +197,9 @@ hr{
   animation-duration:2s;
   animation-delay:1s;
 }
+
+
+
 
 .banner .carousel .carousel-caption .btn{
   -webkit-animation-duration: 2s;

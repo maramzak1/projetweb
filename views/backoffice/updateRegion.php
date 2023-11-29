@@ -201,12 +201,7 @@ if (
                     if ($region) { // Check if $region is not null
                 ?>
                         <form action="" method="POST">
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="id_region">ID</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="basic-default-id" name="id_region" value="<?php echo $region['id_region']; ?>" readonly />
-                                </div>
-                            </div>
+                        <input type="hidden" name="id_region" value="<?php echo $region['id_region']; ?>">
 
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="nom">Nom</label>
@@ -217,10 +212,12 @@ if (
 
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="description">Description</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="basic-default-description" name="description" value="<?php echo $region['description']; ?>" />
-                                </div>
+                                  <div class="col-sm-10">
+                                  <textarea class="form-control" id="basic-default-description" name="description" rows="4"><?php echo $region['description']; ?></textarea>
+                                    </div>
                             </div>
+
+                            
 
                             
 
@@ -232,29 +229,30 @@ if (
                             </div>
 
                             <div class="row justify-content-end">
-                                <div class="col-sm-10">
+                            <div class="col-sm-2">
+                                    <a href="listRegion.php" class="btn btn-secondary">Cancel</a>
+                               </div>
+                              <div class="col-sm-10">
                                     <button type="submit" class="btn btn-primary" name="update_region">Update</button>
                                 </div>
                             </div>
                         </form>
 
                         <?php
-                        // Handle form submission
+                        
                         if (isset($_POST['update_region'])) {
-                            // Check if the expected keys exist in $_POST before using them
+                            
                             $id_region = isset($_POST['id_region']) ? $_POST['id_region'] : '';
                             $nom = isset($_POST['nom']) ? $_POST['nom'] : '';
                             $description = isset($_POST['description']) ? $_POST['description'] : '';
                             $image = isset($_POST['image']) ? $_POST['image'] : '';
 
-                            // Create a Region object
+                            
                             $updatedRegion = new Region($id_region, $nom, $description, $image);
 
-                            // Update the region in the database
+                            
                             $regionC->updateRegion($updatedRegion, $id_region);
-
-                            // Redirect to the desired location after updating
-                            header('Location: listRegion.php');
+                            header('Location:listRegion.php');
                         }
                         ?>
 
@@ -270,13 +268,12 @@ if (
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Fonction de validation du formulaire
+        
         function validateForm() {
             var nomInput = document.getElementById('basic-default-name');
             var descriptionInput = document.getElementById('basic-default-description');
-            var imageInput = document.getElementById('basic-default-image');
-
-            // Fonction pour vérifier si la première lettre est en majuscule
+            
+            
             function isFirstLetterUpperCase(str) {
                 return /^[A-Z]/.test(str);
             }
@@ -284,29 +281,43 @@ if (
             // Validation du nom
             var nom = nomInput.value;
             if (nom.length < 5 || nom.length > 30 || /\d/.test(nom) || !isFirstLetterUpperCase(nom)) {
-                alert('Le nom doit commencer par une lettre en majuscule, ne doit pas contenir de chiffres, et doit avoir une longueur entre 5 et 30 caractères.');
+                displayError(nomInput, 'Le nom doit commencer par une lettre en majuscule, ne doit pas contenir de chiffres, et doit avoir une longueur entre 5 et 30 caractères.');
                 return false;
             }
 
-            // Validation de la description
-            var description = descriptionInput.value;
+            // Validation de  description
+            var description =descriptionInput.value;
             if (description.length < 10 || description.length > 130 || !isFirstLetterUpperCase(description) || !description.endsWith('.')) {
-                alert('La description doit commencer par une majuscule, se terminer par un point, et avoir une longueur entre 10 et 130 caractères.');
+                displayError(descriptionInput, 'La description  doit commencer par une majuscule, se terminer par un point, et avoir une longueur entre 10 et 130 caractères.');
                 return false;
             }
 
-            // Validation de l'image (vérification de la présence d'un point)
-            var image = imageInput.value;
-            if (!image.includes('.')) {
-                alert('L\'image doit contenir un point.');
-                return false;
-            }
+            // Clear previous error messages
+            clearErrors();
 
             return true; // Le formulaire est valide
         }
 
-        // Ajouter un gestionnaire d'événement pour le formulaire
+        function displayError(input, message) {
+            // Create a new error message element
+            var errorElement = document.createElement('div');
+            errorElement.className = 'text-danger';
+            errorElement.innerHTML = message;
+
+            // Insert the error message after the input element
+            input.parentNode.insertBefore(errorElement, input.nextSibling);
+        }
+
+        function clearErrors() {
+            // Remove all previous error messages
+            var errorMessages = document.querySelectorAll('.text-danger');
+            errorMessages.forEach(function (errorMessage) {
+                errorMessage.remove();
+            });
+        }
+
         document.querySelector('form').addEventListener('submit', function (e) {
+            clearErrors(); // Clear previous error messages before revalidation
             if (!validateForm()) {
                 e.preventDefault(); // Empêcher l'envoi du formulaire si la validation échoue
             }
@@ -315,6 +326,8 @@ if (
 </script>
             </body>
             </html>
+
+
 
 
 
