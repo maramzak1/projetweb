@@ -11,15 +11,13 @@ $ct = $ctC->listconcert();
 
 <meta charset="utf-8">
 		<title>Tounizika</title>
-		<!-- Description, Keywords and Author -->
+		
 		<meta name="description" content="Your description">
 		<meta name="keywords" content="Your,Keywords">
 		<meta name="author" content="HimanshuGupta">
 		
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<!-- Styles -->
-		<!-- Bootstrap CSS -->
 		<link href="../assets/frontoffice/css/bootstrap.min.css" rel="stylesheet">	
 		<!-- Animate CSS -->
 		<link href="../assets/frontoffice/css/animate.min.css" rel="stylesheet">
@@ -31,7 +29,7 @@ $ct = $ctC->listconcert();
 		<link href="../assets/frontoffice/css/style.css" rel="stylesheet">
 		<link href="../assets/frontoffice/css/style-color.css" rel="stylesheet">
 		
-		<!-- Favicon -->
+		<!-- logo -->
 		 <link rel="shortcut icon" href="../assets/frontoffice/img/logo/favicon.png">
 	</head>
 	
@@ -44,7 +42,7 @@ $ct = $ctC->listconcert();
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title" id="myModalLabel">Name of The Event &nbsp; <small><span class="label label-success">Available</span> &nbsp; <span class="label label-danger">Not Available</span></small></h4>
 					</div>
-					<!-- form for events ticket booking -->
+					<!-- form for concerts ticket booking -->
 					<form>
 						<div class="modal-body">
 							<div class="form-group">
@@ -89,12 +87,12 @@ $ct = $ctC->listconcert();
 				<!-- secondary menu -->
 				<nav class="secondary-menu">
 					<div class="container">
-						<!-- secondary menu left link area -->
+						
 						<div class="sm-left">
 							<strong>Phone</strong>:&nbsp; <a href="#">555 555 555</a>&nbsp;&nbsp;&nbsp;&nbsp;
 							<strong>E-mail</strong>:&nbsp; <a href="#">music.site@melodi.com</a>
 						</div>
-						<!-- secondary menu right link area -->
+						
 						<div class="sm-right">
 							<!-- social link -->
 							<div class="sm-social-link">
@@ -110,7 +108,7 @@ $ct = $ctC->listconcert();
 				<!-- primary menu -->
 				<nav class="navbar navbar-fixed-top navbar-default">
 					<div class="container">
-						<!-- Brand and toggle get grouped for better mobile display -->
+						
 						<div class="navbar-header">
 							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 								<span class="sr-only">Toggle navigation</span>
@@ -125,25 +123,58 @@ $ct = $ctC->listconcert();
 							</a>
 						</div>
 
-						<!-- Collect the nav links, forms, and other content for toggling -->
+						
 						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul class="nav navbar-nav navbar-right">
 								
 								<li><a href="#CONCERTS">CONCERTS</a></li>
 								
 							</ul>
-						</div><!-- /.navbar-collapse -->
-					</div><!-- /.container-fluid -->
+						</div>
+					</div>
 				</nav>
 			</header>
             <div class="concerts parallax-three pad" id="concerts">
                 <div class="container">
                     <div class="default-heading-shadow">
                         <h2>Coming concerts</h2>
-                        <!-- events element -->
+                        <!-- concert element -->
                         <style>
+							.concerts-item  {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+    font-family: arial;
+  }
+
+  .lieu {
+    color: grey;
+    font-size: 22px;
+  }
+
+  .concerts button {
+    border: none;
+    outline: 0;
+    padding: 12px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+  }
+
+  .concerts button:hover {
+    opacity: 0.7;
+  }
+
     .concert-cell {
         padding-right: 10px; /* Ajustez la valeur selon vos besoins */
+    }
+
+    .concert-cell {
+        padding-right: 50px; 
     }
 </style>
 
@@ -159,7 +190,7 @@ $ct = $ctC->listconcert();
                 
                 <td class="concert-cell">
                     <div class="concerts-item">
-                        <!-- event date -->
+                        <!-- concert date -->
                         <div class="figure">
                             <div class="concert-date">
                                 <strong style="color:white; font-size: 30px;"><?php echo $concert['date']; ?></strong>
@@ -167,7 +198,7 @@ $ct = $ctC->listconcert();
                             </div>
                         </div>
 
-                        <!-- event location -->
+                        <!-- concert location -->
                         <div class="figure">
                             <span class="concert-location">
                                 <i class="fa fa-map-marker" style="font-size: 30px; color: red;">
@@ -187,14 +218,14 @@ $ct = $ctC->listconcert();
                             </div>
                         </div>
 
-                        <!-- event information -->
+                        <!-- concert information -->
                         <div class="figure">
                             <div class="concert-info">
                                 <strong style="color:black; font-size: 30px;"><?php echo $concert['etat']; ?></strong>
                             </div>
                         </div>
 
-                        <!-- event title -->
+                        <!-- concert title -->
                         <div class="figure">
                             <button href="#bookTicket" class="btn btn-lg btn-theme" data-toggle="modal">Book Ticket</button>
                         </div>
@@ -240,22 +271,14 @@ $ct = $ctC->listconcert();
 
 </div>
 
-<!-- Javascript files -->
-<!-- jQuery -->
+
 <script src="js/jquery.js"></script>
-<!-- Bootstrap JS -->
 <script src="js/bootstrap.min.js"></script>
-<!-- WayPoints JS -->
 <script src="js/waypoints.min.js"></script>
-<!-- Include js plugin -->
 <script src="js/owl.carousel.min.js"></script>
-<!-- One Page Nav -->
 <script src="js/jquery.nav.js"></script>
-<!-- Respond JS for IE8 -->
 <script src="js/respond.min.js"></script>
-<!-- HTML5 Support for IE -->
 <script src="js/html5shiv.js"></script>
-<!-- Custom JS -->
 <script src="js/custom.js"></script>
 </body>	
 </html>

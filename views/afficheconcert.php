@@ -12,7 +12,6 @@ $ct = $ctC->listconcert();
 
 <meta charset="utf-8">
 		<title>Melodi</title>
-		<!-- Description, Keywords and Author -->
 		<meta name="description" content="Your description">
 		<meta name="keywords" content="Your,Keywords">
 		<meta name="author" content="HimanshuGupta">
@@ -20,7 +19,7 @@ $ct = $ctC->listconcert();
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<!-- Styles -->
-		<!-- Bootstrap CSS -->
+		
 		<link href="../assets/frontoffice/css/bootstrap.min.css" rel="stylesheet">	
 		<!-- Animate CSS -->
 		<link href="../assets/frontoffice/css/animate.min.css" rel="stylesheet">
@@ -127,7 +126,7 @@ $ct = $ctC->listconcert();
 							</a>
 						</div>
 
-						<!-- Collect the nav links, forms, and other content for toggling -->
+						
 						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul class="nav navbar-nav navbar-right">
 								<li><a href="#latestalbum">Latest Album</a></li>
@@ -138,8 +137,8 @@ $ct = $ctC->listconcert();
 								<li><a href="#team">Team</a></li>
 								<li><a href="#contact">Contact</a></li>
 							</ul>
-						</div><!-- /.navbar-collapse -->
-					</div><!-- /.container-fluid -->
+						</div>
+					</div>
 				</nav>
 			</header>
             <div class="concerts parallax-three pad" id="concerts">
@@ -149,7 +148,7 @@ $ct = $ctC->listconcert();
                         <!-- events element -->
 						<style>
     .concert-row {
-        margin-bottom: 20px; /* Ajoutez l'espace entre les lignes du tableau */
+        margin-bottom: 50px; /* Ajoutez l'espace entre les lignes du tableau */
     }
 </style>
 
@@ -208,22 +207,21 @@ $ct = $ctC->listconcert();
 			
 		</div>
 		
-		<!-- Javascript files -->
-		<!-- jQuery -->
+		
 		<script src="js/jquery.js"></script>
-		<!-- Bootstrap JS -->
+		
 		<script src="js/bootstrap.min.js"></script>
-		<!-- WayPoints JS -->
+		
 		<script src="js/waypoints.min.js"></script>
-		<!-- Include js plugin -->
+		
 		<script src="js/owl.carousel.min.js"></script>
-		<!-- One Page Nav -->
+		
 		<script src="js/jquery.nav.js"></script>
-		<!-- Respond JS for IE8 -->
+		
 		<script src="js/respond.min.js"></script>
-		<!-- HTML5 Support for IE -->
+	
 		<script src="js/html5shiv.js"></script>
-		<!-- Custom JS -->
+		
 		<script src="js/custom.js"></script>
 	</body>	
 </html>

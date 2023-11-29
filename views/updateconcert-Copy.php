@@ -87,15 +87,14 @@ if (
 
     <!-- Helpers -->
     <script src="../assets/backoffice/assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+
     <script src="../assets/backoffice/assets/js/config.js"></script>
   </head>
 
   
   
   <body>
-    <!-- Layout wrapper ORGANISATION MADHHER -->
+    
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- Menu -->
@@ -176,11 +175,6 @@ if (
         
         
         <!-- / Menu -->
-
-        <!-- Layout container  masoul al mandher hhh-->
-         <!-- / Menu -->
-
-        <!-- Layout container  masoul al mandher hhh-->
         <div class="layout-page">
 
 
@@ -196,7 +190,7 @@ if (
                 <?php
                 if (isset($_POST['id_concert'])) {
                   $concert = $concertC->showconcert($_POST['id_concert']);
-                    if ($concert) { // Check if $concert is not null
+                    if ($concert) { 
                 ?>
                         <form action="" method="POST">
                             <div class="row mb-3">
@@ -240,9 +234,9 @@ if (
                         </form>
 
                         <?php
-                        // Handle form submission
+                        
                         if (isset($_POST['update_concert'])) {
-                            // Check if the expected keys exist in $_POST before using them
+                           
                             $id_concert = isset($_POST['id_concert']) ? $_POST['id_concert'] : '';
                             $date = isset($_POST['date']) ? $_POST['date'] : '';
                             $lieu = isset($_POST['lieu']) ? $_POST['lieu'] : '';
@@ -255,7 +249,7 @@ if (
                             // Update the concert in the database
                             $concertC->updateconcert($updatedconcert, $id_concert);
 
-                            // Redirect to the desired location after updating
+                            
                             header('Location: listconcert - Copy.php');
                         }
                         ?>

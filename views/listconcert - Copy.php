@@ -78,8 +78,6 @@ if (
 
     <!-- Helpers -->
     <script src="../assets/backoffice/assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../assets/backoffice/assets/js/config.js"></script>
   </head>
 
@@ -88,7 +86,7 @@ if (
   <body>
     
   
-  <!-- Layout wrapper ORGANISATION MADHHER -->
+  
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- Menu -->
@@ -256,7 +254,7 @@ function validateForm() {
         }
     }
 
-    validateDate(); // Appel de la fonction de validation de la date
+    validateDate(); 
 
     var lieu = lieuInput.value;
     if (!isFirstLetterUpperCase(lieu)) {
