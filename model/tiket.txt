@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Concert</title>
+</head>
+<body>
+
+    
+
+    <div class="ticket">
+        <h2>Book Ticket</h2>
+        <p>Enter the number of tickets:</p>
+        <input type="number" id="num-tickets">
+        <button id="buy-ticket">Buy Ticket</button>
+    </div>
+
+    <script>
+        var bookTicketButtons = document.getElementsByClassName('book-ticket');
+        var ticketDiv = document.getElementsByClassName('ticket')[0];
+        var buyTicketButton = document.getElementById('buy-ticket');
+        var numTicketsInput = document.getElementById('num-tickets');
+
+        function showTicket() {
+            ticketDiv.style.display = 'block';
+        }
+
+        function hideTicket() {
+            ticketDiv.style.display = 'none';
+        }
+
+        for (var i = 0; i < bookTicketButtons.length; i++) {
+            bookTicketButtons[i].addEventListener('click', showTicket);
+        }
+
+        buyTicketButton.addEventListener('click', function() {
+            var numTickets = numTicketsInput.value;
+            alert('You have successfully bought ' + numTickets + ' ticket(s).');
+            hideTicket();
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
