@@ -1,11 +1,10 @@
 <?php
 
-require '../config.php';
+require_once '../config.php';
 
-class commentaireC
+class CommentaireC
 {
-
-    public function listecommentaire()
+    public function listeCommentaire()
     {
         $sql = "SELECT * FROM commentaire";
         $db = config::getConnexion();
@@ -17,45 +16,39 @@ class commentaireC
         }
     }
 
-    function deletecommentaire($ide)
-{
-    $sql = "DELETE FROM commentaire WHERE comment_id = :comment_id"; // Modifier 'id' en 'comment_id'
-    $db = config::getConnexion();
-    $req = $db->prepare($sql);
-    $req->bindValue(':comment_id', $ide);  
-
-    try {
-        $req->execute();
-    } catch (Exception $e) {
-        die('Error:' . $e->getMessage());
-    }
-}
-
-
-
-    function addcommentaire($commentaire)
+    public function deleteCommentaire($id)
     {
-        $sql = "INSERT INTO commentaire  
-        VALUES (NULL,:comment_text,:author, :created_at)";
+        $sql = "DELETE FROM commentaire WHERE comment_id = :comment_id";
+        $db = config::getConnexion();
+        $req = $db->prepare($sql);
+        $req->bindValue(':comment_id', $id, PDO::PARAM_INT);
+
+        try {
+            $req->execute();
+        } catch (Exception $e) {
+            die('Error:' . $e->getMessage());
+        }
+    }
+
+    public function addCommentaire($commentaire)
+    {
+        $sql = "INSERT INTO commentaire VALUES (NULL, :comment_text, :author, :created_at)";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);
             $query->execute([
-                'comment_text' => $commentaire->getcomment_text(),
-                'author' => $commentaire->getauthor(),
-                'created_at' => $commentaire->getcreated_at()
-                 
-                 
+                'comment_text' => $commentaire->getCommentText(),
+                'author' => $commentaire->getAuthor(),
+                'created_at' => $commentaire->getCreatedAt()
             ]);
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
     }
 
-
-    function showcommentaire($id)
+    public function showCommentaire($id)
     {
-        $sql = "SELECT * from commentaire where comment_id = $id";
+        $sql = "SELECT * FROM commentaire WHERE comment_id = $id";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);
@@ -67,33 +60,28 @@ class commentaireC
         }
     }
 
-    function updatecommentaire($commentaire, $id)
-    {   
+    public function updateCommentaire($commentaire, $id)
+    {
         try {
             $db = config::getConnexion();
             $query = $db->prepare(
-               ' UPDATE commentaire SET 
+                'UPDATE commentaire SET 
                    comment_text = :comment_text,
                    author = :author,
                    created_at = :created_at
-                  
-                WHERE comment_id = :comment_id'  
+                WHERE comment_id = :comment_id'
             );
-            
+
             $query->execute([
                 'comment_id' => $id,
-                'comment_text' => $commentaire->getcomment_text(),
-                'author' => $commentaire->getauthor(),   
-                'created_at' => $commentaire->getcreated_at(),
-               
+                'comment_text' => $commentaire->getCommentText(),
+                'author' => $commentaire->getAuthor(),
+                'created_at' => $commentaire->getCreatedAt(),
             ]);
-            
+
             echo $query->rowCount() . " records UPDATED successfully <br>";
         } catch (PDOException $e) {
-            echo 'Error: ' . $e->getMessage();   
+            echo 'Error: ' . $e->getMessage();
         }
     }
-     
-    
-    
-} 
+}

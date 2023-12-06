@@ -7,18 +7,18 @@ class post {
     private ?string $title ;
     private ?string $image ;
    //private ?int $status;
-   //private ?int $comment_id = null;
+   private  $commentaire;
                                            
     
 
-   public function __construct($content,$date,$title,$image) {
+   public function __construct($content,$date,$title,$image,$commentaire) {
     
     $this->content = $content;
     $this->date = $date;
     $this->title = $title;
     $this->image = $image;
    // $this->status = $status;
-    //$this->comment_id = $comment_id;
+    $this->commentaire = $commentaire;
      
 }
 
@@ -65,13 +65,14 @@ class post {
         $this->status=$status;
     }*/
     
-    /*function getCommentId(): int {
-        return $this->comment_id;
+    function getCommentaire(){
+        return $this->commentaire;
     }
 
-    function setCommentId(int $comment_id): void {
-        $this->comment_id = $comment_id;
-    }*/
+    function setCommentId($commentaire){
+        $this->commentaire = $commentaire;
+         
+    }
      
 }
 ?>

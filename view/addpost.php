@@ -1,10 +1,32 @@
 <?php
+// Include PHPMailer and other necessary files
+ 
+ 
+
+// Include config.php first
+require_once 'C:\xampp\htdocs\projetweb\config.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require_once 'C:\xampp\htdocs\projetweb\vendor/autoload.php';
+require_once 'C:\xampp\htdocs\projetweb\vendor\phpmailer\phpmailer\src/Exception.php';
+require_once 'C:\xampp\htdocs\projetweb\vendor\phpmailer\phpmailer\src/PHPMailer.php';
+require_once 'C:\xampp\htdocs\projetweb\vendor\phpmailer\phpmailer\src/SMTP.php';
+
 include_once "../model/post.php";
 include_once "../controller/postC.php";
 
-$postC = new postC();
-$error = "";
+include_once "../model/commentaire.php";
+include_once "../controller/commentaireC.php";
  
+
+$c = new commentaireC();
+$tab = $c->listecommentaire();
+$postC = new postC();
+$error = ""; 
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $uploadDir = "uploads/";
 
@@ -34,6 +56,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 );
 
                 $postC->addPost($post);
+				$mail = new PHPMailer(true);
+
+                try {
+                    // Your email configuration code
+                    // ...
+					$mail->isSMTP();
+					$mail->Host = "your-smtp-server.com";
+					$mail->SMTPAuth = true;
+					$mail->Username = "your-smtp-username";
+					$mail->Password = "your-smtp-password";
+					$mail->SMTPSecure = "tls"; // Use "tls" or "ssl" depending on your email provider
+					$mail->Port = 587; // Check the port required by your email provider
+					
+
+                    $mail->send();
+                } catch (Exception $e) {
+                    echo "Email could not be sent. Error: {$e->getMessage()}";
+                }
+
+                //$postC->sendSMS();
                 // Redirect to listepost.php after adding the post
                 //header('Location: listepost.php');
                 //exit();
@@ -47,85 +89,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Missing information. Please fill in all required fields.";
     }
 }
-$listepost = $postC->getPostList();
+  $comment_id = isset($_POST['commentaire']) ? $_POST['commentaire'] : '';
+$postC->getpostBycommentaire($comment_id);
+ 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ?>
 
+ 
 <html lang="en">
     
-  
-
-
-<!--code templateeee -->
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Melodi</title>
+		<!-- Description, Keywords and Author -->
+		<meta name="description" content="Your description">
+		<meta name="keywords" content="Your,Keywords">
+		<meta name="author" content="HimanshuGupta">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<!-- Styles -->
 		<!-- Bootstrap CSS -->
-		<link href="../assets/HTML/css/bootstrap.min.css" rel="stylesheet">	  
-		<!-- Animate CSS -->
-		<link href="css/animate.min.css" rel="stylesheet">    
+		<link href="..\assets\frontoffice\HTML\css\bootstrap.min.css" rel="stylesheet">	  
+		<!-- Animate CSS --> 
+		<link href="..\assets\frontoffice\HTML\css/animate.min.css" rel="stylesheet">
 		<!-- Basic stylesheet -->
 		<link rel="stylesheet" href="css/owl.carousel.css">
-		<!-- Font awesome CSS -->  
-		<link href="css/font-awesome.min.css" rel="stylesheet">		
+		<!-- Font awesome CSS -->
+		<link href="..\assets\frontoffice\HTML\css/font-awesome.min.css" rel="stylesheet">		
 		<!-- Custom CSS -->
-		<link href="css/style.css" rel="stylesheet">
-		<link href="css/style-color.css" rel="stylesheet">
+		<link href="..\assets\frontoffice\HTML\css/style.css" rel="stylesheet">
+		<link href="..\assets\frontoffice\HTML\css/style-color.css" rel="stylesheet">
 		
 		<!-- Favicon -->
-		<link rel="shortcut icon" href=" ../assets/HTML/img/logo/favicon.ico ">
+		<link rel="shortcut icon" href="..\assets\frontoffice\HTML\img\logo\favicon.ico"> 
 	</head>
 	
 	<body>
-		
-		<!-- modal for booking ticket form -->
-		<div class="modal fade" id="bookTicket" tabindex="-1" role="dialog" aria-labelledby="BookTicket">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Name of The Event &nbsp; <small><span class="label label-success">Available</span> &nbsp; <span class="label label-danger">Not Available</span></small></h4>
-					</div>
-					<!-- form for events ticket booking -->
-					<form>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="exampleInputEmail1">Email</label>
-								<input type="email" class="form-control" id="exampleInputEmail1" placeholder="example@mail.com">
-							</div>
-							<div class="form-group">
-								<label for="exampleInputContact">Comment</label>
-								<input type="text" class="form-control" id="exampleInputContact" placeholder="+91 55 5555 5555">
-							</div>
-							<div class="form-group">
-								<label for="exampleInputSeats">Number of Tickets</label>
-								<select class="form-control" id="exampleInputSeats">
-									<option>1</option>
-									<option>2</option>
-									<option>3</option>
-									<option>4</option>
-									<option>5</option>
-								</select>
-							</div>
-							<div class="checkbox">
-								<label>
-									<input type="checkbox"> I accept the Terms of Service
-								</label>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<!-- link to payment gatway here -->
-							<button type="button" class="btn btn-primary">Book Now</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-		
 		<!-- wrapper -->
 		<div class="wrapper" id="home">
 		
@@ -166,10 +169,11 @@ ini_set('display_errors', 1);
 							<!-- logo area -->
 							<a class="navbar-brand" href="#home">
 								<!-- logo image -->
-								<img class="img-responsive" src="../assets/HTML/img/logo/logo.png" alt="" />   
+								 <img class="img-responsive" src=" frontoffice/HTML/img/logo/logo.png" alt="" width="100" height="auto" />
+  
 							</a>
 						</div>
-
+						
 						<!-- Collect the nav links, forms, and other content for toggling -->
 						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul class="nav navbar-nav navbar-right">
@@ -185,8 +189,6 @@ ini_set('display_errors', 1);
 					</div><!-- /.container-fluid -->
 				</nav>
 			</header>
-			<!--/ header end -->
-			
 			<!-- banner area -->
 			<div class="banner">
 				<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
@@ -235,6 +237,16 @@ ini_set('display_errors', 1);
 			
 			<!-- block for animate navigation menu -->
 			<div class="nav-animate"></div>
+			 
+			 
+		 
+			<!-- contact end -->
+			
+			<!-- footer -->
+		 
+			<!-- footer end -->
+			
+			<!-- Scroll to top -->
 			<span class="totop"><a href="#"><i class="fa fa-chevron-up"></i></a></span> 
 			
 		</div>
@@ -242,85 +254,51 @@ ini_set('display_errors', 1);
 		 
 		<!-- Javascript files -->
 		<!-- jQuery -->
-		<script src="js/jquery.js"></script>
-		<!-- Bootstrap JS -->
-		<script src="js/bootstrap.min.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/jquery.js"></script>
+		<!-- Bootstrap JS --> 
+		<script src="..\assets\frontoffice\HTML\js/bootstrap.min.js"></script>
 		<!-- WayPoints JS -->
-		<script src="js/waypoints.min.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/waypoints.min.js"></script>
 		<!-- Include js plugin -->
-		<script src="js/owl.carousel.min.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/owl.carousel.min.js"></script>
 		<!-- One Page Nav -->
-		<script src="js/jquery.nav.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/jquery.nav.js"></script>
 		<!-- Respond JS for IE8 -->
-		<script src="js/respond.min.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/respond.min.js"></script>
 		<!-- HTML5 Support for IE -->
-		<script src="js/html5shiv.js"></script>
+		<script src="..\assets\frontoffice\HTML\js/html5shiv.js"></script>
 		<!-- Custom JS -->
-		<script src="js/custom.js"></script>
-		<div class="about" id="team">
+		<script src="..\assets\frontoffice\HTML\js/custom.js"></script>
+
+		<div class="contact pad" id="contact">
 			<div class="container">
 				<!-- default heading -->
 				<div class="default-heading">
-					<!-- heading --> 
-					<h2>Posts</h2>
+					<!-- heading -->
+					<h2>posts</h2>
 				</div>
-				<!-- about what we are like content -->
-				<div class="about-what-we">
-					<div class="row">
-						<div class="col-md-4 col-sm-4">
-							<div class="what-we-item ">
-								<!-- heading with icon -->
-								<h3><i class="fa fa-heartbeat"></i> What we do?</h3>
-								<!-- paragraph -->
-		<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
-							</div>
-						</div>
-						<div class="col-md-4 col-sm-4">
-							<div class="what-we-item ">
-								<!-- heading with icon -->
-								<h3><i class="fa fa-hand-o-up"></i> Why choose us?</h3>
-								<!-- paragraph -->
-								<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
-							</div>
-						</div>
-						<div class="col-md-4 col-sm-4">
-							<div class="what-we-item ">
-								<!-- heading with icon -->
-								<h3><i class="fa fa-map-marker"></i> Where we are?</h3>
-								<!-- paragraph -->
-<!--<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit occaecat cupidatat non id est laborum.</p>-->
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
 
 <!-- hedhiii khedemtiii -->
 
 
 
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <!-- Add any necessary meta tags and stylesheets -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ajoutez tout balisage méta et les feuilles de style nécessaires -->
 </head>
+
 <body>
-   <!-- <center>
-        <button><a href="listepost.php">Back to list</a></button>
-    </center>-->
-    <hr>
+    <hr> 
+	<a class="view-all-posts" href="allposts.php">View All Posts</a>
+
+
+
     <center>
-        <form action="" method="POST" id="myForm" enctype="multipart/form-data">
-            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                <?php foreach ($listepost as $post) { ?>
-                    <div style="border: 1px solid #ccc; padding: 10px; width: 200px; margin-right: 20px;">
-                        <img src="<?= $post['image']; ?>" alt="Description de l'image" style="width: 100%; height: auto; border: 1px solid #ccc;">
-                        <p style="margin: 10px 0; font-weight: bold;"><?= $post['title']; ?></p>
-                        <p><?= $post['date']; ?></p>
-                    </div>
-                <?php } ?>
-            </div>
-                </center>
-<center>
+        <form action="" method="POST" enctype="multipart/form-data">
             <table>
                 <tr>
                     <td><label for="title">Title:</label></td>
@@ -344,6 +322,20 @@ ini_set('display_errors', 1);
                     </td>
                 </tr>
                 <tr>
+    <td><label for="commentaire">commentaire:</label></td>
+    <td>
+        <select name="commentaire" id="commentaire">
+            <?php
+            foreach ($tab as $commentaire) {
+                $comment_id = isset($commentaire['comment_id']) ? $commentaire['comment_id'] : '';
+                $author = isset($commentaire['author']) ? $commentaire['author'] : '';
+                echo '<option value="' . $comment_id . '">' . $author . '</option>';
+            }
+            ?>
+        </select>
+    </td>
+</tr>
+                <tr>
                     <br>
                     <td colspan="2">
                         <input type="submit" class="btn btn-lg btn-theme" value="Save">
@@ -351,16 +343,57 @@ ini_set('display_errors', 1);
                     </td>
                 </tr>
             </table>
+        </form>
 
         <?php
-        // Display error message if there is any
-        if (!empty($error)) {
-            echo '<div style="color:red;text-align:center;">' . $error . '</div>';
+        // Traitement du formulaire lorsqu'il est soumis
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Ajoutez la logique de traitement ici, par exemple, pour valider et enregistrer les données
+            // Utilisez $_POST['title'], $_POST['content'], $_FILES['image'] pour accéder aux données du formulaire
+
+            // Notez également l'utilisation de l'attribut "enctype" pour traiter les fichiers dans le formulaire
         }
         ?>
-    </form>
     </center>
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Form reference
+    var form = document.querySelector('form');
+
+    // Add event listener to form submit
+    form.addEventListener('submit', function (event) {
+        // Validate title
+        var titleInput = document.getElementById('title');
+        if (titleInput.value.trim() === '') {
+            document.getElementById('errortitle').innerText = 'Title is required';
+            event.preventDefault();
+        } else {
+            document.getElementById('errortitle').innerText = '';
+        }
+
+        // Validate content
+        var contentInput = document.getElementById('content');
+        if (contentInput.value.trim() === '') {
+            document.getElementById('errorcontent').innerText = 'Content is required';
+            event.preventDefault();
+        } else {
+            document.getElementById('errorcontent').innerText = '';
+        }
+
+        // Validate image
+        var imageInput = document.getElementById('image');
+        if (imageInput.files.length === 0) {
+            document.getElementById('errorimage').innerText = 'Image is required';
+            event.preventDefault();
+        } else {
+            document.getElementById('errorimage').innerText = '';
+        }
+    });
+});
+</script>
 </body>
+
+</html>
 
 <style>
 body {
@@ -393,6 +426,129 @@ input[type="datetime-local"] {
     box-sizing: border-box;
     border-radius: 4px;
 }
- 
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header Styles */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 15px 0;
+}
+
+.secondary-menu {
+    background-color: #444;
+    padding: 5px 0;
+}
+
+.sm-left,
+.sm-right {
+    float: left;
+    width: 50%;
+}
+
+.sm-right {
+    text-align: right;
+}
+
+.sm-social-link a {
+    color: #fff;
+    margin-right: 10px;
+}
+
+.navbar {
+    margin-bottom: 0;
+    background-color: #333;
+    border: none;
+    border-radius: 0;
+}
+
+.navbar-brand img {
+    max-height: 50px;
+}
+
+.navbar-nav > li > a {
+    color: #fff;
+}
+
+/* Form Styles */
+.contact.pad {
+    padding: 50px 0;
+    background-color: #fff;
+}
+
+.default-heading h2 {
+    color: #333;
+    font-size: 36px;
+    margin-bottom: 30px;
+}
+
+form {
+    width: 60%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+input[type="submit"],
+input[type="reset"] {
+    background-color: #e8491d;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+    background-color: #333;
+}
+/* Styles for "View All Posts" link */
+a.view-all-posts {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #e8491d;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+a.view-all-posts:hover {
+    background-color: #333;
+}
+
 </style>
+
 </html>

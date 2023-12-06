@@ -1,60 +1,107 @@
-<!DOCTYPE html>
- 
-  
-<html
+<?php
+include_once "../controller/postC.php";
+include_once '../model/post.php';
+//php liste
+$c = new postC();
+$tab = $c->listepost();
+$uploads_dir = "uploads";
 
+if (!file_exists($uploads_dir)) {
+    mkdir($uploads_dir, 0777, true);
+}
+//php ajout
+include_once '../model/post.php';
+
+$error = "";
+$postC = new postC();
+
+// Vérifier si le formulaire a été soumis
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Vérifier si les champs sont non vides
+    if (!empty($_POST['title']) && !empty($_POST['content']) && !empty($_POST['image'])&& !empty($_POST['commentaire']) ) {
+        // Créer un objet  avec les données du formulaire
+        $post = new post(
+            null,
+            $_POST['title'],
+            $_POST['content'],
+            $_POST['image'],
+            $_POST['commentaire'],
+           
+        );
+
+        // Ajouter  à la base de données
+        $postC->addpost($post);
+
+        // Rediriger vers la liste 
+        header('Location: listpost.php');
+        exit();
+    } else {
+        // Afficher une erreur si des informations sont manquantes
+        $error = "Missing information";
+    }
+}
+?>
+
+
+
+
+
+
+
+<html
   lang="en"
   class="light-style layout-menu-fixed layout-compact"
   dir="ltr"
   data-theme="theme-default"
-   
   data-assets-path="../assets/"
   data-template="vertical-menu-template-free">
-  <link rel="stylesheet" href="css/styles.css">
-  
-  
+
+
   <head>
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Tounizika DashBoard</title>
 
     <meta name="description" content="" />
     <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
 
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
       rel="stylesheet" />
-     
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/core.css">
-  
-    <!-- Core CSS -->  
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/core.css" />
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/theme-default.css" />
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/css/demo.css>
- 
-    <!-- Vendors CSS --> 
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
- 
-    <!-- Page CSS --> 
-   
-    <!-- Helpers -->
-    <script src="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/js/helpers.js"></script>  
-    
-    <script src="../backoffice/assets/sneat-bootstrap-html-admin-template-free/sneat-bootstrap-html-admin-template-free/assets/js\config.js"></script>
-  </head> 
 
-  
-  
-  <body>
+    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/fonts/boxicons.css" />
      
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/css/demo.css" />
+    
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+     
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="../Assets/backoffice/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/js/config.js"></script>
+     
+  </head>
+
+
+
+  <body>
+
+
+  <!-- Layout wrapper ORGANISATION MADHHER -->
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         <!-- Menu -->
@@ -121,86 +168,143 @@
 
           <div class="menu-inner-shadow"></div>
 
+           <!-- Forms & Tables -->
+           <li class="menu-header small text-uppercase"><span class="menu-header-text">Gestion commentaire</span></li>
+
           <ul class="menu-inner py-1">
+
+             <li class="menu-item">
+                <a href="Addcommentaire.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-table"></i>
+                  <div data-i18n="Tables">Ajout commentaire</div>
+                </a>
+             </li>
             
-             <li class="menu-item active">
-              <a href="tables-basic.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-table"></i>
-                <div data-i18n="Tables">commentaires</div>
-              </a>
+             <li class="menu-item">
+                 <a href="listRegion.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Liste des posts</div>
+                 </a>
+            </li>
+
+            <li class="menu-item  ">
+                 <a href="Addpost.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Ajout post</div>
+                 </a>
+            </li>
+
+            <li class="menu-item active">
+                 <a href="listpost.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Liste Des posts</div>
+                 </a>
             </li>
             
+
           </ul>
+
         </aside>
-        
-       
+
+
+        <!-- / Menu -->
+
+        <!-- Layout container  masoul al mandher hhh-->
         <div class="layout-page">
-<?php
-include_once "../controller/postC.php";
 
-$postC = new postC();
-$listepost = $postC->getPostList();
-$uploads_dir = "uploads";
+        <!-- wfet el organisation-->
 
-if (!file_exists($uploads_dir)) {
-    mkdir($uploads_dir, 0777, true);
-}
 
-$totalPosts = $postC->getTotalPosts();
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des posts</title>
-</head>
-<body>
-    <center>
-        <h1>Liste des posts</h1>
-        <h2><a href="addpost.php">Ajouter un post</a></h2>
-    </center>
-    <table border="1" align="center" width="70%">
-        <tr>
-            <th>TITRE</th>
-            <th>content</th>
-            <th>image</th>
-            <th>date</th>
-            <th>Nbr Total Posts</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
-        <?php foreach ($listepost as $post) : ?>
-            <tr>
-                <td><?= $post['title']; ?></td>
-                <td><?= $post['content']; ?></td>
-                <td style="text-align: center;">
-                    <?php if (!empty($post['image']) && file_exists($uploads_dir . '/' . basename($post['image']))) : ?>
-                        <img src="<?= $uploads_dir . '/' . basename($post['image']); ?>" alt="Description de l'image" style="width: 100%; max-width: 2000px; height: auto; border: 1px solid #ccc;">
-                    <?php else : ?>
-                        No Image
-                    <?php endif; ?>
-                </td>
-                <td><?= $post['date']; ?></td>
-                <td><?= $totalPosts; ?></td>
-                <td align="center">
-                    <form method="POST" action="updatepost.php">
-                        <?php if (isset($post['id'])) : ?>
-                            <input type="hidden" name="id" value="<?= $post['id']; ?>">
-                        <?php endif; ?>
-                        <input type="submit" name="update" value="Update">
-                    </form>
-                </td> 
-                <td align="center">
-                    <form method="GET" action="deletepost.php">
-                        <input type="hidden" name="id" value="<?= $post['id']; ?>">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!--AFFICHAGE DE LA LISTE-->
+        <div class="card">
+    <h5 class="card-header">Liste du post</h5>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>title</th>
+                        <th>content</th>
+                        <th>image</th>
+                        <th>commentaire associée</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($tab as $post) { ?>
+                        <tr>
+                            <td><span class="badge bg-label-primary me-1"><?= $post['id']; ?></span></td>
+                            <td>
+                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
+                                <span class="fw-medium"><?= $post['title']; ?></span>
+                            </td>
+                            <td>
+                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
+                                <span class="fw-medium"><?= $post['content']; ?></span>
+                            </td>
+                            <td style="text-align: center;">
+                                <?php if (!empty($post['image']) && file_exists($uploads_dir . '/' . basename($post['image']))) : ?>
+                                    <img src="<?= $uploads_dir . '/' . basename($post['image']); ?>" alt="Description de l'image" style="width: 100%; max-width: 100px; height: auto; border: 1px solid #ccc;">
+                                <?php else : ?>
+                                    No Image
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
+                                <span class="fw-medium"><?= $post['commentaire']; ?></span>
+                            </td>
+                            <td>
+                                <a href="deletepost.php?id=<?= $post['id']; ?>">Delete</a>
+                                <form method="POST" action="updatepost.php">
+                                    <input type="submit" name="update" value="Update">
+                                    <input type="hidden" value="<?= $post['id']; ?>" name="id">
+                                </form>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+  <!--inlcusion taa java-->
+  <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../Assets/backoffice/assets/vendor/libs/popper/popper.js"></script>
+    <script src="../Assets/backoffice/assets/vendor/js/bootstrap.js"></script>
+    <script src="../Assets/backoffice/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../Assets/backoffice/assets/vendor/js/menu.js"></script>
+    <script src="../Assets/backoffice/assets/js/main.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+
+   
 </body>
-</html>
-
+</html>   

@@ -1,12 +1,25 @@
 <?php
-include "../config.php";
+include_once "../config.php";
 require_once '../model/post.php';  
-
+ 
 class postC {
+
+    public function listepost()   
+    {
+        $sql = "SELECT * FROM post";
+        $db = config::getConnexion();
+        try {
+            $liste = $db->query($sql);
+            return $liste;
+        } catch (Exception $e) {
+            die('Error:' . $e->getMessage());
+        }
+    }
     
-    function addPost($post) {
-        $sql = "INSERT INTO post (content, date, title, image, status) 
-                VALUES (:content, :date, :title, :image, :status)";
+    function addPost($post)
+    {
+        $sql = "INSERT INTO post (content, date, title, image, commentaire, status) 
+                VALUES (:content, :date, :title, :image, :commentaire, :status)";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);
@@ -15,36 +28,28 @@ class postC {
                 'date' => $post->getDate(),
                 'title' => $post->getTitle(),
                 'image' => $post->getImage(),
+                'commentaire' => $post->getcommentaire(),
                 'status' => 1,
-            ]); 
+            ]);
         } catch (Exception $e) {
             echo 'Erreur: ' . $e->getMessage();
         }
     }
     
-    function getPostList() {
-        $sql = "SELECT * FROM post WHERE status = 1 ORDER BY date DESC LIMIT 100 ";
+
+    function getpostBycommentaire($comment_id)
+    {
+        $sql = "SELECT * FROM post WHERE commentaire = :comment_id";
         $db = config::getConnexion();
-        try {
-            $list = $db->query($sql);
-            return $list;
-        } catch (Exception $e) {
-            die('Erreur: ' . $e->getMessage());
-        }
-    }
 
-    function getPostById($id) {
         try {
-            $db = config::getConnexion();
-            $query = $db->prepare('SELECT * FROM post WHERE id = :id');
-            $query->execute(['id' => $id]);
-            $post = $query->fetch(PDO::FETCH_ASSOC);
-
+            $query = $db->prepare($sql);
+            $query->bindValue(':comment_id', $comment_id);
+            $query->execute();
+            $post = $query->fetchAll(PDO::FETCH_ASSOC);
             return $post;
-        } catch (PDOException $e) {
-            // Handle the exception (e.g., log or display an error message)
-            echo "Error: " . $e->getMessage();
-            return null;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
         }
     }
 
@@ -64,27 +69,29 @@ class postC {
         try {
             $db = config::getConnexion();
             $query = $db->prepare(
-               ' UPDATE post SET 
-                   content = :content,
-                   title = :title,
-                   date= :date
-                  
-                WHERE id= :id'  
+                'UPDATE post SET 
+                    title= :title, 
+                    content = :content,
+                    image = :image,
+                    commentaire = :commentaire
+                WHERE id= :id'
             );
-            
+    
             $query->execute([
                 'id' => $id,
+                'title' => $post->gettitle(),
                 'content' => $post->getcontent(),
-                'author' => $post->gettitle(),   
-                'date' => $post->getdate(),
-               
+                'image' => $post->getimage(),  // Corrected this line
+                'commentaire' => $post->getcommentaire()
             ]);
-            
+    
             echo $query->rowCount() . " records UPDATED successfully <br>";
         } catch (PDOException $e) {
-            echo 'Error: ' . $e->getMessage();   
+            echo $e->getMessage();  // Output the error message for debugging
         }
     }
+    
+
     function showpost($id)
     {
         $sql = "SELECT * from post where id = $id";
@@ -98,23 +105,10 @@ class postC {
             die('Error: ' . $e->getMessage());
         }
     }
-   /* function getLatestPosts($limit = 5) {
-        $sql = "SELECT * FROM post WHERE etat = 1 ORDER BY date DESC LIMIT :limit";
-        $db = config::getConnexion();
-        try {
-            $query = $db->prepare($sql);
-            $query->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $query->execute();
-            $list = $query->fetchAll(PDO::FETCH_ASSOC);
-            return $list;
-        } catch (Exception $e) {
-            echo 'Erreur: ' . $e->getMessage();
-            return null;
-        }
-    }*/
+    
 
-   /* function searchPostsByKeyword($keyword) {
-        $sql = "SELECT * FROM post WHERE etat = 1 AND (content LIKE :keyword OR title LIKE :keyword)";
+    public function searchPostsByKeyword($keyword) {
+        $sql = "SELECT * FROM post WHERE content LIKE :keyword OR title LIKE :keyword";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);
@@ -126,8 +120,7 @@ class postC {
             echo 'Erreur: ' . $e->getMessage();
             return null;
         }
-    }*/
-
+    }
     /*function getPaginatedPosts($page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
         $sql = "SELECT * FROM post WHERE etat = 1 ORDER BY date DESC LIMIT :offset, :perPage";
@@ -153,8 +146,80 @@ class postC {
             return $row['total'];
         } catch (Exception $e) {
             die('Erreur: ' . $e->getMessage());
+        } 
+    }
+   /*function sendSMS() {
+        $accountSid = 'AC21c8de495139705eeb49cb1e82c3f7ed'; 
+        $authToken = 'f0ae7f8098b7b23b468df0cc241f95ab'; 
+        $twilioClient = new Twilio\Rest\Client($accountSid, $authToken);
+
+        // Send an SMS
+        $twilioClient->messages->create(
+            '+21650591799',
+            array(
+                'from' => '+15623726596',
+                'body' => "Un nouvelle post a été ajoutée avec succès."
+            )
+        );
+    }*/
+    /*public function likePost($id) {
+        $db = config::getConnexion();
+        $sql = "UPDATE post SET likes = likes + 1 WHERE id = :id";
+        $query = $db->prepare($sql);
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+        $success = $query->execute();
+    
+        return $success; // Indiquez le succès ou l'échec de l'opération
+    }
+    
+    public function dislikePost($id) {
+        $db = config::getConnexion();
+        $sql = "UPDATE post SET dislikes = dislikes + 1 WHERE id = :id";
+        $query = $db->prepare($sql);
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+        $success = $query->execute();
+    
+        return $success; // Indiquez le succès ou l'échec de l'opération
+    }*/
+    function recherchepost($post)
+    {
+        $sql = "SELECT * FROM post where post.title like '%$id%' or post.content like '%$id%'";
+        $db = config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list;
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
         }
     }
+    public function getAllPosts()
+    {
+        $sql = "SELECT * FROM post";
+        $db = config::getConnexion();
+        try {
+            $query = $db->query($sql);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+    function recherchePostParTitre($rech)
+    {
+        $sql = "SELECT * FROM post WHERE title LIKE '%$rech%'";
+        $db = config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list;
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
+    
+     
+
+
+    
 }
 
 ?>
+ 
