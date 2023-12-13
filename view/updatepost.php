@@ -1,45 +1,54 @@
 <?php
-include_once '../model/commentaire.php';
 include_once '../controller/postC.php';
 include_once '../model/post.php';
-include_once '../controller/commentaireC.php';
+
 $error = "";
-
 $post = null;
-
 $postC = new postC();
 
-$c = new commentaireC();
-$tab = $c->listecommentaire();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST["id"]) && isset($_POST["title"]) && isset($_POST["content"]) && isset($_POST["date"])) {
+        // Vérifier si les champs ne sont pas vides
+        if (!empty($_POST["id"]) && !empty($_POST["title"]) && !empty($_POST["content"]) && !empty($_POST["date"])) {
 
-if (
-    isset($_POST["title"]) &&
-    isset($_POST["content"]) &&
-    isset($_POST["image"]) &&
-    isset($_POST["commentaire"])
-) {
-    if (
-        !empty($_POST['title']) &&
-        !empty($_POST['content']) &&
-        !empty($_POST['commentaire'])
-    ) {
-        $post = new post(
-            null,
-            $_POST['title'],
-            $_POST['content'],
-            $_POST['image'],
-            $_POST['commentaire']
-        );
+            // Upload nouvelle image si fournie
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+                $uploadDir = '../uploads/'; // Définissez votre répertoire d'upload
+                $image = $uploadDir . basename($_FILES['image']['name']);
 
-        $postC->updatepost($post, $_POST['id']);
+                // Assurez-vous que le répertoire existe ou créez-le
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
 
-        header('Location:listepost.php');
-    } else {
-        $error = "Missing information";
-    }
+                move_uploaded_file($_FILES['image']['tmp_name'], $image);
+            } else {
+                // Pas de nouvelle image téléchargée, utilisez le chemin de l'image existant
+                $post = $postC->showpost($_POST['id']);
+                $image = $post['image'];
+            }
+
+            // Créer une instance de post
+            $post = new post(
+                $_POST['id'],
+                $_POST['title'],
+                $_POST['content'],
+                $_POST['date'],
+                $image
+            );
+
+            // Tenter de mettre à jour le post
+            $success = $postC->updatepost($post, $_POST['id']);
+
+            // Vérification des erreurs et feedback
+              
+                header('Location: allposts.php'); // Redirige vers allposts.php
+                exit(); // Assurez-vous qu'aucun autre code n'est exécuté
+             
+        }  
+    } 
 }
 ?>
-
 
 <html
   lang="en"
@@ -69,23 +78,23 @@ if (
       href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
       rel="stylesheet" />
 
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/fonts/boxicons.css" />
-      
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\fonts\boxicons.css" />
+
     <!-- Core CSS -->
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/css/demo.css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\css\demo.css" />
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet" href="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
 
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="../Assets/backoffice/assets/vendor/js/helpers.js"></script>
+    <script src="../../Assets/backoffice/assets/vendor/js/helpers.js"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script src="../assets/backoffice/sneat-bootstrap-html-admin-template-free/assets/js/config.js"></script>
+    <script src="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\js\config.js"></script>
   </head>
 
 
@@ -163,7 +172,7 @@ if (
              <li class="menu-item active">
               <a href="tables-basic.html" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-table"></i>
-                <div data-i18n="Tables">Gestion des Régions</div>
+                <div data-i18n="Tables">Gestion des posts</div>
               </a>
             </li>
 
@@ -176,118 +185,80 @@ if (
         <!-- Layout container  masoul al mandher hhh-->
         <div class="layout-page">
 
-
-
-
-
-
-
-
         <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Modifiez post </h5>
+                <h5 class="mb-0">Modifiez commentaire </h5>
                 <small class="text-muted float-end"></small>
             </div>
             <div class="card-body">
-                                <?php
-                                if (isset($_POST['id'])) {
-                                    $post = $postC->showpost($_POST['id']);
-                                    if ($post) {
-                                ?>
-                                        <form action="" method="POST">
-                                            <input type="hidden" name="id" value="<?php echo $post['id']; ?>">
 
-                                            <div class="row mb-3">
-                                                <label class="col-sm-2 col-form-label" for="title">title</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="basic-default-title" name="title" value="<?php echo $post['title']; ?>" />
-                                                </div>
-                                            </div>
+<body>
+    
 
-                                            <div class="row mb-3">
-                                                <label class="col-sm-2 col-form-label" for="content">content</label>
-                                                <div class="col-sm-10">
-                                                    <textarea class="form-control" id="basic-default-content" name="content" rows="4"><?php echo $post['content']; ?></textarea>
-                                                </div>
-                                            </div>
+    <div id="error">
+        <?php echo $error; ?>
+    </div>
 
-                                            <div class="row mb-3">
-                                                <label class="col-sm-2 col-form-label" for="basic-default-image">image</label>
-                                                <div class="col-sm-10">
-                                                    <input type="text" class="form-control" id="basic-default-image" name="image" value="<?php echo $post['image']; ?>" />
-                                                </div>
-                                            </div>
+    <?php
+    if (isset($_POST['id'])) {
+        $post = $postC->showpost($_POST['id']);
+    ?>
 
-                                            <div class="row mb-3">
-                                                <label class="col-sm-2 col-form-label" for="basic-default-commentaire">commentaire</label>
-                                                <div class="col-sm-10">
-                                                    <select name="commentaire" id="commentaire">
-                                                        <?php
-                                                        foreach ($tab as $commentaire) {
-                                                            $selected = ($commentaire['comment_id'] == $post['commentaire']) ? 'selected' : '';
-                                                            echo '<option value="' . $commentaire['comment_id'] . '" ' . $selected . '>' . $commentaire['title'] . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </div>
+        <form action="" method="POST" enctype="multipart/form-data">
+            <table>
+                 
+                <div class="row mb-3">
+                     <label  class="col-sm-2 col-form-label" for="id">ID du post :</label> 
+                     <div class="col-sm-10">
+                        <input type="text" id="id" name="id" value="<?php echo $_POST['id'] ?>" readonly />
+                        <!-- Add this hidden input for id -->
+                        <input type="hidden" name="id" value="<?php echo $_POST['id']; ?>">
+                        </div>
+                            </div>
+                            <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="title">Title :</label> 
+                    <div class="col-sm-10">
+                        <textarea class="form-control"  id="title" name="title" rows="4" cols="50"><?php echo $post['title'] ?></textarea>
+                        </div>
+                            </div>
+                            <div class="row mb-3">
+   <label class="col-sm-2 col-form-label" for="content">Content:</label> 
+   <div class="col-sm-10">
+      <textarea class="form-control" id="content" name="content" rows="4" cols="50"><?php echo $post['content'] ?></textarea>
+   </div>
+</div>
 
-                                            <div class="row justify-content-end">
-                                                <div class="col-sm-2">
-                                                    <a href="listFolklore.php" class="btn btn-secondary">Cancel</a>
-                                                </div>
-                                                <div class="col-sm-10">
-                                                    <button type="submit" class="btn btn-primary" name="update_post">Update</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <?php
-                                    } else {
-                                        echo "commentaire not found";
-                                    }
-                                }
-                                ?>
+<div class="row mb-3">
+   <label class="col-sm-2 col-form-label" for="date">Créé le :</label> 
+   <div class="col-sm-10">
+      <input type="datetime-local" class="form-control" id="date" name="date" value="<?php echo $post['date'] ?>" />
+   </div>
+</div>
+
+
+                        <div class="row mb-3">
+                     <label for="image">Nouvelle Image :</label> 
+                     <div class="col-sm-10">
+                        <input type="file" class="form-control" id="image" name="image">
+                        </div>
+                            </div>
+
+                           
+
+                        <div class="row justify-content-end">
+                            <div class="col-sm-2">
+                                <a href="allposts.php" class="btn btn-secondary">Cancel</a>
+                            </div>
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary" name="update_post">Update</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Form reference
-    var form = document.querySelector('form');
+        </form>
 
-    // Add event listener to form submit
-    form.addEventListener('submit', function (event) {
-        // Validate title
-        var titleInput = document.getElementById('title');
-        if (titleInput.value.trim() === '') {
-            document.getElementById('errortitle').innerText = 'Title is required';
-            event.preventDefault();
-        } else {
-            document.getElementById('errortitle').innerText = '';
-        }
-
-        // Validate content
-        var contentInput = document.getElementById('content');
-        if (contentInput.value.trim() === '') {
-            document.getElementById('errorcontent').innerText = 'Content is required';
-            event.preventDefault();
-        } else {
-            document.getElementById('errorcontent').innerText = '';
-        }
-
-        // Validate image
-        var imageInput = document.getElementById('image');
-        if (imageInput.files.length === 0) {
-            document.getElementById('errorimage').innerText = 'Image is required';
-            event.preventDefault();
-        } else {
-            document.getElementById('errorimage').innerText = '';
-        }
-    });
-});
-</script>
-            </body>
-            </html>
+    <?php
+    }
+    ?>
+</body>
+</html>

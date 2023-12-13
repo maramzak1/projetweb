@@ -11,8 +11,9 @@ if (isset($_GET["comment_id"])) {
     echo "Deleted comment with ID: " . $comment_id; // Message de débogage
 
     header('Location: listecommentaire.php');
+    exit();
 } else {
     // Handle the case when comment_id is not set in the URL
-    echo "Comment ID not provided.";
+    echo "Comment ID not provided. Check the URL parameters.";
 }
 ?>

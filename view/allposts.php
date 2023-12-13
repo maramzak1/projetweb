@@ -1,20 +1,17 @@
 <?php
 include_once "../controller/postC.php";
+include_once "../controller/commentaireC.php";
 
-// Créez une instance de la classe postC
 $postC = new postC();
+$commentaireC = new commentaireC();
 
-// Vérifiez s'il y a un terme de recherche dans l'URL
 if (isset($_GET['search'])) {
-    // Utilisez la fonction recherchePostParTitre pour obtenir les résultats de la recherche
     $searchTerm = $_GET['search'];
     $posts = $postC->recherchePostParTitre($searchTerm);
 } else {
-    // Si aucun terme de recherche n'est spécifié, obtenez tous les posts
     $posts = $postC->getAllPosts();
 }
 
-// Obtenez tous les posts
 $totalPosts = $postC->getTotalPosts();
 ?>
 
@@ -22,118 +19,179 @@ $totalPosts = $postC->getTotalPosts();
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Posts</title>
-    <!-- Ajoutez tout balisage méta et les feuilles de style nécessaires -->
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 180px 0 0 0;
+        padding: 0;
+        color: #fff;
+        background-color: transparent;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        text-align: center;
+        padding-bottom: 20px;
+    }
+
+    form {
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    input[type="text"] {
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #d2b48c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+    }
+
+    button:hover {
+        background-color: #e74c3c;
+    }
+
+    .posts-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px; /* Ajustez l'espacement entre les postes si nécessaire */
+    }
+
+    .post {
+        float: left;
+        width: calc(50% - 20px);
+        margin: 0 40px 40px 10px;
+        padding: 15px;
+        background-color: transparent;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .post:hover {
+        transform: scale(1.05);
+    }
+
+    h3 {
+        color: white;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    .comments-container {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        clear: both;
+    }
+
+    .comment {
+        margin: 10px 0;
+        padding: 8px;
+        border-radius: 4px;
+    }
+
+    .total-posts {
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+  @media (min-width: 750px) {
+        .post {
+            width: calc(20% - 10px);
+        }
+    }
+</style>
+
+
+
 </head>
 
-<body>
-    <div class="container">
-        <h2>All Posts</h2>
-
-        <!-- Ajoutez un formulaire de recherche -->
+<body style="background-image: url('../assets/frontoffice/HTML/img/logo/posts.jpg'); background-size: cover; background-position: center;">
+<div class="container">
+     
+        <!-- Search form -->
         <form action="allposts.php" method="GET">
             <input type="text" name="search" placeholder="Search by Title">
             <button type="submit">Search</button>
         </form>
 
-        <!-- Affichez le nombre total de posts -->
+        <!-- Total posts count -->
         <div class="total-posts">Total Posts: <?= $totalPosts; ?></div>
 
-        <!-- Affichez la liste des posts -->
         <?php foreach ($posts as $post) : ?>
-            <div class="post">
-                <h3><?= $post['title']; ?></h3>
-                <p><?= $post['content']; ?></p>
-                <img src="<?= $post['image']; ?>" alt="Post Image" width="300">
-                <p>Posted on <?= $post['date']; ?></p>
+    <div class="post <?= isset($_GET['search']) ? 'search-result' : ''; ?>" onclick="toggleComments(this)">
+        <h3><?= $post['title']; ?></h3>
+        <p><?= $post['content']; ?></p>
+        <img src="<?= $post['image']; ?>" alt="Post Image" class="<?= isset($_GET['search']) ? 'search-image' : ''; ?>" width="300">
+
+
+        <p>Posted on <?= $post['date']; ?></p>
+                <!-- Comment button -->
+                <button type="button" onclick="redirectToCommentPage(<?= $post['id']; ?>, '<?= $post['title']; ?>')">Comment</button>
+                
+                <!-- Comments container -->
+                <div class="comments-container" id="comments_<?= $post['id']; ?>">
+                    <?php
+                    $comments = $commentaireC->getcommentaireBypost($post['id']);
+                    if (!empty($comments)) {
+                        echo '<div class="comments-section">';
+                        foreach ($comments as $comment) :
+                    ?>
+                            <div class="comment">
+                                <p><?= $comment['comment_text']; ?></p>
+                                <p>Commented by <?= $comment['author']; ?> on <?= $comment['created_at']; ?></p>
+                            </div>
+                    <?php
+                        endforeach;
+                        echo '</div>';
+                    } else {
+                        echo '<p>No comments yet.</p>';
+                    }
+                    ?>
+                </div>
+                
+                <script>
+                    function redirectToCommentPage(id, title) {
+                        var url = "addcommentaire.php?id=" + id + "&title=" + encodeURIComponent(title);
+                        <?php if (isset($_GET['comment_added'])) echo 'url += "&comment_added=1";'; ?>
+                        window.location.href = url;
+                    }
+                </script>
             </div>
-            <hr>
         <?php endforeach; ?>
     </div>
+
+    <script>
+        function toggleComments(postElement) {
+            var commentsContainer = postElement.querySelector('.comments-container');
+            commentsContainer.style.display = (commentsContainer.style.display === 'none' || commentsContainer.style.display === '') ? 'block' : 'none';
+        }
+    </script>
 </body>
-<style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #ff6666, #e8491d);
-            color: #333;
-            margin: 0;
-            padding: 0;
-            opacity: 0;
-            animation: fadeIn ease-in 1s forwards;
-        }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            animation: fadeIn ease-in 1s forwards;
-        }
-
-        h2 {
-            color: #e8491d;
-        }
-
-        .post {
-            width: 100%;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .post:hover {
-            background-color: #f9f9f9;
-        }
-
-        h3 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #555;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background: #ddd;
-            margin: 15px 0;
-        }
-
-        .total-posts {
-            background-color: #e8491d;
-            color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 18px;
-        }
-    </style>
+</html>
 </html>

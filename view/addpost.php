@@ -16,13 +16,9 @@ require_once 'C:\xampp\htdocs\projetweb\vendor\phpmailer\phpmailer\src/SMTP.php'
 
 include_once "../model/post.php";
 include_once "../controller/postC.php";
-
-include_once "../model/commentaire.php";
-include_once "../controller/commentaireC.php";
  
-
-$c = new commentaireC();
-$tab = $c->listecommentaire();
+ 
+ 
 $postC = new postC();
 $error = ""; 
 
@@ -48,32 +44,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (move_uploaded_file($image['tmp_name'], $uploadPath)) {
                 // Create a new Post object with the uploaded image path
                 $post = new Post(
+                    null, // ou un identifiant réel si vous en avez un
+                    $title,
                     $content,
                     date('Y-m-d H:i:s'),
-                    $title,
-                    $uploadPath,
-                    1
+                    $uploadPath
                 );
+                
 
                 $postC->addPost($post);
 				$mail = new PHPMailer(true);
 
-                try {
-                    // Your email configuration code
-                    // ...
-					$mail->isSMTP();
-					$mail->Host = "your-smtp-server.com";
-					$mail->SMTPAuth = true;
-					$mail->Username = "your-smtp-username";
-					$mail->Password = "your-smtp-password";
-					$mail->SMTPSecure = "tls"; // Use "tls" or "ssl" depending on your email provider
-					$mail->Port = 587; // Check the port required by your email provider
-					
-
-                    $mail->send();
-                } catch (Exception $e) {
-                    echo "Email could not be sent. Error: {$e->getMessage()}";
-                }
+               
 
                 //$postC->sendSMS();
                 // Redirect to listepost.php after adding the post
@@ -89,262 +71,224 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Missing information. Please fill in all required fields.";
     }
 }
-  $comment_id = isset($_POST['commentaire']) ? $_POST['commentaire'] : '';
-$postC->getpostBycommentaire($comment_id);
+   
  
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ?>
 
- 
-<html lang="en">
-    
-   <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Melodi</title>
-		<!-- Description, Keywords and Author -->
-		<meta name="description" content="Your description">
-		<meta name="keywords" content="Your,Keywords">
-		<meta name="author" content="HimanshuGupta">
-		
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		
-		<!-- Styles -->
-		<!-- Bootstrap CSS -->
-		<link href="..\assets\frontoffice\HTML\css\bootstrap.min.css" rel="stylesheet">	  
-		<!-- Animate CSS --> 
-		<link href="..\assets\frontoffice\HTML\css/animate.min.css" rel="stylesheet">
-		<!-- Basic stylesheet -->
-		<link rel="stylesheet" href="css/owl.carousel.css">
-		<!-- Font awesome CSS -->
-		<link href="..\assets\frontoffice\HTML\css/font-awesome.min.css" rel="stylesheet">		
-		<!-- Custom CSS -->
-		<link href="..\assets\frontoffice\HTML\css/style.css" rel="stylesheet">
-		<link href="..\assets\frontoffice\HTML\css/style-color.css" rel="stylesheet">
-		
-		<!-- Favicon -->
-		<link rel="shortcut icon" href="..\assets\frontoffice\HTML\img\logo\favicon.ico"> 
-	</head>
-	
-	<body>
-		<!-- wrapper -->
-		<div class="wrapper" id="home">
-		
-			<!-- header area -->
-			<header>
-				<!-- secondary menu -->
-				<nav class="secondary-menu">
-					<div class="container">
-						<!-- secondary menu left link area -->
-						<div class="sm-left">
-							<strong>Phone</strong>:&nbsp; <a href="#">555 555 555</a>&nbsp;&nbsp;&nbsp;&nbsp;
-							<strong>E-mail</strong>:&nbsp; <a href="#">music.site@melodi.com</a>
-						</div>
-						<!-- secondary menu right link area -->
-						<div class="sm-right">
-							<!-- social link -->
-							<div class="sm-social-link">
-								<a class="h-facebook" href="#"><i class="fa fa-facebook"></i></a>
-								<a class="h-twitter" href="#"><i class="fa fa-twitter"></i></a>
-								<a class="h-google" href="#"><i class="fa fa-google-plus"></i></a>
-								<a class="h-linkedin" href="#"><i class="fa fa-linkedin"></i></a>
-							</div>
-						</div>
-						<div class="clearfix"></div>
-					</div>
-				</nav>
-				<!-- primary menu -->
-				<nav class="navbar navbar-fixed-top navbar-default">
-					<div class="container">
-						<!-- Brand and toggle get grouped for better mobile display -->
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-								<span class="sr-only">Toggle navigation</span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-							<!-- logo area -->
-							<a class="navbar-brand" href="#home">
-								<!-- logo image -->
-								 <img class="img-responsive" src=" frontoffice/HTML/img/logo/logo.png" alt="" width="100" height="auto" />
-  
-							</a>
-						</div>
-						
-						<!-- Collect the nav links, forms, and other content for toggling -->
-						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-							<ul class="nav navbar-nav navbar-right">
-								<li><a href="#latestalbum">Latest Album</a></li>
-								<li><a href="#featuredalbum">Featured Album</a></li>
-								<li><a href="#joinus">Join Us</a></li>
-								<li><a href="#portfolio">Portfolio</a></li>
-								<li><a href="#events">Events</a></li>
-								<li><a href="#team">Team</a></li>
-								<li><a href="#contact">Comment</a></li>
-							</ul>
-						</div><!-- /.navbar-collapse -->
-					</div><!-- /.container-fluid -->
-				</nav>
-			</header>
-			<!-- banner area -->
-			<div class="banner">
-				<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-					<!-- Wrapper for slides -->
-					<div class="carousel-inner" role="listbox">
-						<div class="item active">
-							<img src="img/banner/b1.jpg" alt="...">
-							<div class="container">
-								<!-- banner caption -->
-								<div class="carousel-caption slide-one">
-									<!-- heading -->
-									<h2 class="animated fadeInLeftBig"><i class="fa fa-music"></i> Melodi For You!</h2>
-									<!-- paragraph -->
-									<h3 class="animated fadeInRightBig">Find More Innovative &amp; Creative Music Albums.</h3>
-									<!-- button -->
-									<a href="#" class="animated fadeIn btn btn-theme">Download Here</a>
-								</div>
-							</div>
-						</div>
-						<div class="item">
-							<img src="img/banner/b2.jpg" alt="...">
-							<div class="container">
-								<!-- banner caption -->
-								<div class="carousel-caption slide-two">
-									<!-- heading -->
-									<h2 class="animated fadeInLeftBig"><i class="fa fa-headphones"></i> Listen It...</h2>
-									<!-- paragraph -->
-									<h3 class="animated fadeInRightBig">Lorem ipsum dolor sit amet, consectetur elit.</h3>
-									<!-- button -->
-									<a href="#" class="animated fadeIn btn btn-theme">Listen Now</a>
-								</div>
-							</div>
-						</div>
-					</div>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free">
 
-					<!-- Controls -->
-					<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
-						<span class="fa fa-arrow-left" aria-hidden="true"></span>
-					</a>
-					<a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
-						<span class="fa fa-arrow-right" aria-hidden="true"></span>
-					</a>
-				</div>
-			</div>
-			<!--/ banner end -->
-			
-			<!-- block for animate navigation menu -->
-			<div class="nav-animate"></div>
-			 
-			 
-		 
-			<!-- contact end -->
-			
-			<!-- footer -->
-		 
-			<!-- footer end -->
-			
-			<!-- Scroll to top -->
-			<span class="totop"><a href="#"><i class="fa fa-chevron-up"></i></a></span> 
-			
-		</div>
-		<!-- footer -->
-		 
-		<!-- Javascript files -->
-		<!-- jQuery -->
-		<script src="..\assets\frontoffice\HTML\js/jquery.js"></script>
-		<!-- Bootstrap JS --> 
-		<script src="..\assets\frontoffice\HTML\js/bootstrap.min.js"></script>
-		<!-- WayPoints JS -->
-		<script src="..\assets\frontoffice\HTML\js/waypoints.min.js"></script>
-		<!-- Include js plugin -->
-		<script src="..\assets\frontoffice\HTML\js/owl.carousel.min.js"></script>
-		<!-- One Page Nav -->
-		<script src="..\assets\frontoffice\HTML\js/jquery.nav.js"></script>
-		<!-- Respond JS for IE8 -->
-		<script src="..\assets\frontoffice\HTML\js/respond.min.js"></script>
-		<!-- HTML5 Support for IE -->
-		<script src="..\assets\frontoffice\HTML\js/html5shiv.js"></script>
-		<!-- Custom JS -->
-		<script src="..\assets\frontoffice\HTML\js/custom.js"></script>
 
-		<div class="contact pad" id="contact">
-			<div class="container">
-				<!-- default heading -->
-				<div class="default-heading">
-					<!-- heading -->
-					<h2>posts</h2>
-				</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Tounizika DashBoard</title>
+
+    <meta name="description" content="" />
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\fonts\boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\css\core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\css\theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\css\demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\vendor\libs\perfect-scrollbar\perfect-scrollbar.css" />
+
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="../../Assets/backoffice/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="..\assets\backoffice\sneat-bootstrap-html-admin-template-free\assets\js\config.js"></script>
+  </head>
+
+
+
+  <body>
+    <!-- Layout wrapper ORGANISATION MADHHER -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg
+                  width="25"
+                  viewBox="0 0 25 42"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <defs>
+                    <path
+                      d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
+                      id="path-1"></path>
+                    <path
+                      d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z"
+                      id="path-3"></path>
+                    <path
+                      d="M7.50063644,21.2294429 L12.3234468,23.3159332 C14.1688022,24.7579751 14.397098,26.4880487 13.008334,28.506154 C11.6195701,30.5242593 10.3099883,31.790241 9.07958868,32.3040991 C5.78142938,33.4346997 4.13234973,34 4.13234973,34 C4.13234973,34 2.75489982,33.0538207 2.37032616e-14,31.1614621 C-0.55822714,27.8186216 -0.55822714,26.0572515 -4.05231404e-15,25.8773518 C0.83734071,25.6075023 2.77988457,22.8248993 3.3049379,22.52991 C3.65497346,22.3332504 5.05353963,21.8997614 7.50063644,21.2294429 Z"
+                      id="path-4"></path>
+                    <path
+                      d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
+                      id="path-5"></path>
+                  </defs>
+                  <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
+                      <g id="Icon" transform="translate(27.000000, 15.000000)">
+                        <g id="Mask" transform="translate(0.000000, 8.000000)">
+                          <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                          </mask>
+                          <use fill="#696cff" xlink:href="#path-1"></use>
+                          <g id="Path-3" mask="url(#mask-2)">
+                            <use fill="#696cff" xlink:href="#path-3"></use>
+                            <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-3"></use>
+                          </g>
+                          <g id="Path-4" mask="url(#mask-2)">
+                            <use fill="#696cff" xlink:href="#path-4"></use>
+                            <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-4"></use>
+                          </g>
+                        </g>
+                        <g
+                          id="Triangle"
+                          transform="translate(19.000000, 11.000000) rotate(-300.000000) translate(-19.000000, -11.000000) ">
+                          <use fill="#696cff" xlink:href="#path-5"></use>
+                          <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-5"></use>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold ms-2"> Tounizika</span>
+            </a>
+
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+              <i class="bx bx-chevron-left bx-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+          <li class="menu-item  ">
+                 <a href="Addcommentaire.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Ajout commentaire</div>
+                 </a>
+            </li>
+
+
+             <li class="menu-item active">
+              <a href="tables-basic.html" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-table"></i>
+                <div data-i18n="Tables">ajout post</div>
+              </a>
+            </li>
+            <li class="menu-item active">
+                 <a href="listepost.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Liste Des posts</div>
+                 </a>
+            </li>
+            <li class="menu-item active">
+                 <a href="listecommentaire.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Liste Des commentaires</div>
+                 </a>
+            </li>
+
+          </ul>
+        </aside>
+
+
+        <!-- / Menu -->
+
+        <!-- Layout container  masoul al mandher hhh-->
+        <div class="layout-page">
+
+        <div class="row">
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Ajouter Post </h5>
+                <small class="text-muted float-end"></small>
+            </div>
+            <div class="card-body">
+
+<body>
 
 <!-- hedhiii khedemtiii -->
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Ajoutez tout balisage méta et les feuilles de style nécessaires -->
-</head>
-
-<body>
-    <hr> 
-	<a class="view-all-posts" href="allposts.php">View All Posts</a>
+ 
+     
+	 
 
 
 
-    <center>
-        <form action="" method="POST" enctype="multipart/form-data">
-            <table>
-                <tr>
-                    <td><label for="title">Title:</label></td>
-                    <td>
-                        <input type="text" id="title" name="title" />
-                        <span id="errortitle" style="color: red"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="content">Content:</label></td>
-                    <td>
-                        <input type="text" id="content" name="content" />
-                        <span id="errorcontent" style="color: red"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="image">Image:</label></td>
-                    <td>
-                        <input type="file" id="image" name="image" accept="image/*" />
-                        <span id="errorimage" style="color: red"></span>
-                    </td>
-                </tr>
-                <tr>
-    <td><label for="commentaire">commentaire:</label></td>
-    <td>
-        <select name="commentaire" id="commentaire">
-            <?php
-            foreach ($tab as $commentaire) {
-                $comment_id = isset($commentaire['comment_id']) ? $commentaire['comment_id'] : '';
-                $author = isset($commentaire['author']) ? $commentaire['author'] : '';
-                echo '<option value="' . $comment_id . '">' . $author . '</option>';
-            }
-            ?>
-        </select>
-    </td>
-</tr>
-                <tr>
-                    <br>
-                    <td colspan="2">
-                        <input type="submit" class="btn btn-lg btn-theme" value="Save">
-                        <input type="reset" class="btn btn-lg btn-theme" value="Reset">
-                    </td>
-                </tr>
-            </table>
-        </form>
+     
+<form action="" method="POST" enctype="multipart/form-data">
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label" for="title">Title:</label>
+        <div class="col-sm-10">
+            <input type="text" id="title" name="title" class="form-control" />
+            <span id="errortitle" style="color: red"></span>
+        </div>
+    </div>
 
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label" for="content">Content:</label>
+        <div class="col-sm-10">
+            <input type="text" id="content" name="content" class="form-control" />
+            <span id="errorcontent" style="color: red"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="image" class="col-sm-2 col-form-label">Image:</label>
+        <div class="col-sm-10">
+            <input type="file" class="form-control" id="image" name="image">
+            <span id="errorimage" style="color: red"></span>
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-sm-2">
+            <a href="addpost.php" class="btn btn-secondary">Cancel</a>
+        </div>
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary" name="enregistre">Save</button>
+        </div>
+    </div>
+</form>
+
+        
         <?php
         // Traitement du formulaire lorsqu'il est soumis
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -354,7 +298,7 @@ ini_set('display_errors', 1);
             // Notez également l'utilisation de l'attribut "enctype" pour traiter les fichiers dans le formulaire
         }
         ?>
-    </center>
+    
 	<script>
 document.addEventListener("DOMContentLoaded", function () {
     // Form reference
@@ -392,163 +336,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 </body>
+ 
+
 
 </html>
 
-<style>
-body {
-    background-color: #f4f4f4;
-    color: #333;
-    font-family: Arial, sans-serif;
-}
-
-.comment-form {
-    width: 60%;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-    font-weight: bold;
-}
-
-textarea,
-input[type="text"],
-input[type="datetime-local"] {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    border-radius: 4px;
-}
-body {
-    background-color: #f4f4f4;
-    color: #333;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-.wrapper {
-    position: relative;
-    overflow: hidden;
-}
-
-/* Header Styles */
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 15px 0;
-}
-
-.secondary-menu {
-    background-color: #444;
-    padding: 5px 0;
-}
-
-.sm-left,
-.sm-right {
-    float: left;
-    width: 50%;
-}
-
-.sm-right {
-    text-align: right;
-}
-
-.sm-social-link a {
-    color: #fff;
-    margin-right: 10px;
-}
-
-.navbar {
-    margin-bottom: 0;
-    background-color: #333;
-    border: none;
-    border-radius: 0;
-}
-
-.navbar-brand img {
-    max-height: 50px;
-}
-
-.navbar-nav > li > a {
-    color: #fff;
-}
-
-/* Form Styles */
-.contact.pad {
-    padding: 50px 0;
-    background-color: #fff;
-}
-
-.default-heading h2 {
-    color: #333;
-    font-size: 36px;
-    margin-bottom: 30px;
-}
-
-form {
-    width: 60%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-input,
-select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    border-radius: 4px;
-}
-
-input[type="submit"],
-input[type="reset"] {
-    background-color: #e8491d;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-input[type="submit"]:hover,
-input[type="reset"]:hover {
-    background-color: #333;
-}
-/* Styles for "View All Posts" link */
-a.view-all-posts {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #e8491d;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-a.view-all-posts:hover {
-    background-color: #333;
-}
-
-</style>
-
-</html>
+ 
+ 

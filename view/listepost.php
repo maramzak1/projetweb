@@ -1,7 +1,7 @@
 <?php
 include_once "../controller/postC.php";
 include_once '../model/post.php';
-//php liste
+
 $c = new postC();
 $tab = $c->listepost();
 $uploads_dir = "uploads";
@@ -9,34 +9,29 @@ $uploads_dir = "uploads";
 if (!file_exists($uploads_dir)) {
     mkdir($uploads_dir, 0777, true);
 }
-//php ajout
-include_once '../model/post.php';
 
 $error = "";
 $postC = new postC();
 
-// Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Vérifier si les champs sont non vides
-    if (!empty($_POST['title']) && !empty($_POST['content']) && !empty($_POST['image'])&& !empty($_POST['commentaire']) ) {
-        // Créer un objet  avec les données du formulaire
-        $post = new post(
-            null,
-            $_POST['title'],
-            $_POST['content'],
-            $_POST['image'],
-            $_POST['commentaire'],
-           
-        );
+    if (!empty($_POST['title']) && !empty($_POST['content']) && !empty($_FILES['image']['name']) && !empty($_POST['commentaire'])) {
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $commentaire = $_POST['commentaire'];
 
-        // Ajouter  à la base de données
+        // Image handling
+        $image = $_FILES['image']['name'];
+        $imagePath = $uploads_dir . '/' . $image;
+
+        move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+
+        $post = new post(null, $title, $content, $imagePath, $commentaire);
+
         $postC->addpost($post);
 
-        // Rediriger vers la liste 
         header('Location: listpost.php');
         exit();
     } else {
-        // Afficher une erreur si des informations sont manquantes
         $error = "Missing information";
     }
 }
@@ -173,17 +168,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <ul class="menu-inner py-1">
 
-             <li class="menu-item">
-                <a href="Addcommentaire.php" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-table"></i>
-                  <div data-i18n="Tables">Ajout commentaire</div>
-                </a>
-             </li>
-            
-             <li class="menu-item">
-                 <a href="listRegion.php" class="menu-link">
+           
+          <li class="menu-item  ">
+                 <a href="Addcommentaire.php" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-grid"></i>
-                  <div data-i18n="Datatables">Liste des posts</div>
+                  <div data-i18n="Datatables">Ajout commentaire</div>
                  </a>
             </li>
 
@@ -200,6 +189,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <div data-i18n="Datatables">Liste Des posts</div>
                  </a>
             </li>
+            <li class="menu-item active">
+                 <a href="listecommentaire.php" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-grid"></i>
+                  <div data-i18n="Datatables">Liste Des commentaires</div>
+                 </a>
+            </li>
+
             
 
           </ul>
@@ -242,59 +238,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <!--AFFICHAGE DE LA LISTE-->
         <div class="card">
-    <h5 class="card-header">Liste du post</h5>
-    <div class="card-body">
-        <div class="table-responsive text-nowrap">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>title</th>
-                        <th>content</th>
-                        <th>image</th>
-                        <th>commentaire associée</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($tab as $post) { ?>
-                        <tr>
-                            <td><span class="badge bg-label-primary me-1"><?= $post['id']; ?></span></td>
-                            <td>
-                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
-                                <span class="fw-medium"><?= $post['title']; ?></span>
-                            </td>
-                            <td>
-                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
-                                <span class="fw-medium"><?= $post['content']; ?></span>
-                            </td>
-                            <td style="text-align: center;">
-                                <?php if (!empty($post['image']) && file_exists($uploads_dir . '/' . basename($post['image']))) : ?>
-                                    <img src="<?= $uploads_dir . '/' . basename($post['image']); ?>" alt="Description de l'image" style="width: 100%; max-width: 100px; height: auto; border: 1px solid #ccc;">
-                                <?php else : ?>
-                                    No Image
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <i class="bx bxl-angular bx-sm text-danger me-3"></i>
-                                <span class="fw-medium"><?= $post['commentaire']; ?></span>
-                            </td>
-                            <td>
-                                <a href="deletepost.php?id=<?= $post['id']; ?>">Delete</a>
-                                <form method="POST" action="updatepost.php">
-                                    <input type="submit" name="update" value="Update">
-                                    <input type="hidden" value="<?= $post['id']; ?>" name="id">
-                                </form>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+                <h5 class="card-header">Liste du post</h5>
+                <div class="card-body">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>title</th>
+                                    <th>content</th>
+                                    <th>image</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($tab as $post) { ?>
+                                    <tr>
+                                        <td><span class="badge bg-label-primary me-1"><?= $post['id']; ?></span></td>
+                                        <td>
+                                            <i class="bx bxl-angular bx-sm text-danger me-3"></i>
+                                            <span class="fw-medium"><?= $post['title']; ?></span>
+                                        </td>
+                                        <td>
+                                            <i class="bx bxl-angular bx-sm text-danger me-3"></i>
+                                            <span class="fw-medium"><?= $post['content']; ?></span>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <?php
+                                            if (!empty($post['image']) && file_exists($post['image'])) {
+                                                echo '<img src="' . $post['image'] . '" alt="Description de l\'image" style="width: 100%; max-width: 100px; height: auto; border: 1px solid #ccc;">';
+                                            } else {
+                                                echo 'No Image';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <a href="deletepost.php?id=<?= $post['id']; ?>">Delete</a>
+                                            
+                        </div>
+                          <!-- Formulaire pour le bouton "Update" -->
+        <form method="POST" action="updatepost.php" style="display: inline-block;">
+            <input type="hidden" name="id" value="<?= $post['id']; ?>">
+            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary" name="update_post">Update</button>
+                            </div>
+            
+        </form>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-
+            <script src="../assets/vendor/libs/jquery/jquery.js"></script>
   <!--inlcusion taa java-->
   <script src="../assets/vendor/libs/jquery/jquery.js"></script>
     <script src="../Assets/backoffice/assets/vendor/libs/popper/popper.js"></script>

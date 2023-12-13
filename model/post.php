@@ -1,29 +1,24 @@
 <?php 
 class post {  
-      
-    private ?int $id = null;
-    private ?string $content ;
-    private ?string $date ;
-    private ?string $title ;
-    private ?string $image ;
-   //private ?int $status;
-   private  $commentaire;
-                                           
+    private ?int $id;
+    private ?string $title;
+    private ?string $content;
+    private ?string $date;
+    private ?string $image;
     
-
-   public function __construct($content,$date,$title,$image,$commentaire) {
-    
-    $this->content = $content;
-    $this->date = $date;
-    $this->title = $title;
-    $this->image = $image;
-   // $this->status = $status;
-    $this->commentaire = $commentaire;
-     
-}
+    public function __construct(?int $id, ?string $title, ?string $content, ?string $date, ?string $image) {
+        $this->id = $id;
+        $this->title = $title;
+        $this->content = $content;
+        $this->date = $date;
+        $this->image = $image;
+    }
 
     function getId(){
         return $this->id;
+    }
+    function getTitle(){
+        return $this->title;
     }
 
     function getContent(){
@@ -34,17 +29,17 @@ class post {
         return $this->date;
     }
 
-    function getTitle(){
-        return $this->title;
-    }
-
+     
     function getImage(){
         return $this->image;
     }
 
-    /*function getStatus(): int {
+   /* function getStatus(): int {
         return $this->status;
     }*/
+    function setTitle(string $title){
+        $this->title = $title;
+    }
 
     function setContent(string $content){
         $this->content = $content;
@@ -54,9 +49,7 @@ class post {
         $this->date = $date;
     }
 
-    function setTitle(string $title){
-        $this->title = $title;
-    }
+    
 
     function setImage(string $image){
         $this->image = $image;
@@ -65,14 +58,6 @@ class post {
         $this->status=$status;
     }*/
     
-    function getCommentaire(){
-        return $this->commentaire;
-    }
-
-    function setCommentId($commentaire){
-        $this->commentaire = $commentaire;
-         
-    }
-     
+  
 }
 ?>

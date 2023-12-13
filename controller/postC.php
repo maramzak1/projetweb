@@ -18,8 +18,8 @@ class postC {
     
     function addPost($post)
     {
-        $sql = "INSERT INTO post (content, date, title, image, commentaire, status) 
-                VALUES (:content, :date, :title, :image, :commentaire, :status)";
+        $sql = "INSERT INTO post (content, date, title, image,status) 
+                VALUES (:content, :date, :title, :image,:status)";
         $db = config::getConnexion();
         try {
             $query = $db->prepare($sql);
@@ -28,7 +28,6 @@ class postC {
                 'date' => $post->getDate(),
                 'title' => $post->getTitle(),
                 'image' => $post->getImage(),
-                'commentaire' => $post->getcommentaire(),
                 'status' => 1,
             ]);
         } catch (Exception $e) {
@@ -65,31 +64,32 @@ class postC {
         }
     }
     function updatepost($post, $id)
-    {   
+    {
         try {
             $db = config::getConnexion();
             $query = $db->prepare(
                 'UPDATE post SET 
-                    title= :title, 
+                    title = :title, 
                     content = :content,
-                    image = :image,
-                    commentaire = :commentaire
-                WHERE id= :id'
+                    date = :date,
+                    image = :image
+                WHERE id = :id '
             );
     
             $query->execute([
+                'title' => $post->getTitle(),
+                'content' => $post->getContent(),
+                'date' => $post->getDate(),
+                'image' => $post->getImage(),
                 'id' => $id,
-                'title' => $post->gettitle(),
-                'content' => $post->getcontent(),
-                'image' => $post->getimage(),  // Corrected this line
-                'commentaire' => $post->getcommentaire()
             ]);
     
             echo $query->rowCount() . " records UPDATED successfully <br>";
         } catch (PDOException $e) {
-            echo $e->getMessage();  // Output the error message for debugging
+            echo 'Error: ' . $e->getMessage();
         }
     }
+    
     
 
     function showpost($id)
@@ -148,7 +148,7 @@ class postC {
             die('Erreur: ' . $e->getMessage());
         } 
     }
-   /*function sendSMS() {
+   function sendSMS() {
         $accountSid = 'AC21c8de495139705eeb49cb1e82c3f7ed'; 
         $authToken = 'f0ae7f8098b7b23b468df0cc241f95ab'; 
         $twilioClient = new Twilio\Rest\Client($accountSid, $authToken);
@@ -161,7 +161,7 @@ class postC {
                 'body' => "Un nouvelle post a été ajoutée avec succès."
             )
         );
-    }*/
+    }
     /*public function likePost($id) {
         $db = config::getConnexion();
         $sql = "UPDATE post SET likes = likes + 1 WHERE id = :id";
@@ -214,7 +214,16 @@ class postC {
             die('Erreur: ' . $e->getMessage());
         }
     }
-    
+    public function getPostsByUserId($userId)
+    {
+        $query = "SELECT * FROM posts WHERE user_id = :userId";
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $posts;
+    }
      
 
 
