@@ -9,7 +9,7 @@ class config
         if (!isset(self::$pdo)) {
             try {
                 self::$pdo = new PDO(
-                    'mysql:host=localhost;dbname=commentaire',
+                    'mysql:host=localhost;dbname=tounizika',
                     'root',
                     '',
                     [
@@ -25,12 +25,3 @@ class config
         return self::$pdo;
     }
 }
-
-
-
-
-
-
-
-
-config::getConnexion();

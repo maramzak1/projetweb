@@ -1,21 +1,26 @@
 <?php
 class concert
 {
-    private ?int $id = null;
-    private string $date;
-    private string $lieu;
-    private string $etat;
+    private ?int $id_concert;
+    private ?string $date=null;
+    private ?string $lieu=null;
+    private ?string $etat=null;
+    private ?string $image=null;
+    private $utilisateur;
 
-    public function __construct($id = null, $d, $l, $e)
+
+    public function __construct(?int $id = null, $d, $l, $e,$i,$u)
     {
-        $this->id = $id;
+        $this->id_concert = $id;
         $this->date = $d;
         $this->lieu = $l;
         $this->etat = $e;
+        $this->image = $i;
+        $this->utilisateur = $u;
     }
     public function getId()
     {
-        return $this->id;
+        return $this->id_concert;
     }
 
 
@@ -59,7 +64,39 @@ class concert
 
         return $this;
     }
+    public function getimage()
+    {
+        return $this->image;
+    }
 
+
+    public function setimage($image)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+    public function getUtilisateur()
+    {
+        return $this->utilisateur;
+    }
+
+
+    public function setUtilisateur($utilisateur)
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
